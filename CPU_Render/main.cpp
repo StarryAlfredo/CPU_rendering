@@ -16,8 +16,33 @@ float zBuffer[width * height];
 
 Model model("african_head.obj");
 
-void line(const Vec2i &t0, const Vec2i &t1,TGAImage &image,const TGAColor &color)
-{	
+Matrix LookAtLH(Vec3f EyePosition ,Vec3f FocusPosition ,Vec3f UpDirection) {
+	Matrix view(4);
+	
+	Vec3f w = FocusPosition - EyePosition;
+	w.normalize();
+	Vec3f u = w.crossProduct(UpDirection);
+	u.normalize();
+	Vec3f j = u.crossProduct(w);
+	
+	view[0] = vector<float>{ w.x,w.y,w.z,0};
+	view[1] = vector<float>{ u.x,u.y,u.z,0};
+	view[2] = vector<float>{ j.x,j.y,j.z,0};
+	view[3] = vector<float>{ 0, 0, 0, 1};
+
+	return view;
+}
+Matrix PerspectiveFovLH() {
+
+	Matrix p;
+	
+	//p();
+
+	return	p;
+}
+ 
+
+void line(const Vec2i &t0, const Vec2i &t1,TGAImage &image,const TGAColor &color){	
 	int x0 =t0.x, x1=t1.x, y0=t0.y, y1 = t1.y;
 	bool steep = false;
 	
@@ -83,6 +108,27 @@ Vec3f isInTrangle(Vec3f (&t)[3],Vec3f P)
 }
 
 
+bool isInTrangle(Vec2f(&t)[3], Vec2f P, Vec3f &barycentric)
+{	
+	bool  inside = true;
+	Vec2f AP;
+	Vec2f abc[] = { t[1] - t[0] ,t[2] - t[1] ,t[0] - t[2]};
+	float S = abc[0].crossProductValue(t[2] - t[0]);
+
+
+	for (int i = 0; i <3 ; ++i)
+	{	
+		AP = P - t[i];
+		float w = abc[i].crossProductValue(AP);
+		inside &= (w == 0 ? (abc[i].y == 0 && abc[i].x > 0) || abc[i].y > 0 : w > 0);
+		
+		barycentric.raw[(i + 2) % 3] =   w / S;
+	}
+	
+	return inside;
+
+}
+
 void triangle(Vec3f (&t)[3],Vec2f (&uv)[3],TGAImage &image, const float intensity)
 {
 	Vec2f box[2];	
@@ -94,12 +140,41 @@ void triangle(Vec3f (&t)[3],Vec2f (&uv)[3],TGAImage &image, const float intensit
 	box[1].y = max(max(t[0].y, t[1].y), t[2].y);
 	
 	Vec3f P;
+	Vec2f abc[3];
+
+	for (int i = 0; i < 3; ++i)
+	{
+		abc[i] = Vec2f(t[i].x,t[i].y);
+	}
+
+	Vec3f barycentric;
 
 	for (P.x = box[0].x; P.x <= box[0].y; P.x++) {
 		for (P.y = box[1].x; P.y <= box[1].y; P.y++) {
-			Vec3f barycentric = isInTrangle(t,P);
+			
+			if (isInTrangle(abc, Vec2f(P.x, P.y),barycentric))
+			{	
+				P.z = 0;
+				for (int i = 0; i < 3; ++i)
+				{	
+					P.z += barycentric.raw[i] * (1 / t[i].z);
+				}
+				P.z = 1 / P.z;
+				int index = P.y * height + P.x;
+				if (P.z < zBuffer[index])
+				{	
+					zBuffer[index] = P.z;
+					image.set(P.x, P.y, TGAColor(255 * intensity, 255 * intensity, 255 * intensity, 255));
+				}
+			}
+			else
+				continue;
+			
+		/*	Vec3f barycentric = isInTrangle(t,P);
+			
 			if (barycentric.x < 0 || barycentric.y < 0 || barycentric.z < 0)
 				continue;
+			
 			P.z = 0;
 
 			for (int i = 0; i < 3; ++i)
@@ -116,7 +191,7 @@ void triangle(Vec3f (&t)[3],Vec2f (&uv)[3],TGAImage &image, const float intensit
 				TGAColor color = model.diffuse(position);
 				zBuffer[index] = P.z;
 				image.set(P.x, P.y, TGAColor(color.r * intensity,color.g * intensity ,color.b * intensity,255));	
-			}
+			}*/
 		}
 	}
 }
@@ -132,7 +207,7 @@ int main(int argc, char ** argv)
 	
 	float intensity;
 	
-	float minFloat =  - numeric_limits<float>::max();
+	float minFloat =   numeric_limits<float>::max();
 
 	for (int i = width * height; i--; zBuffer[i] = minFloat);
 		
@@ -147,7 +222,7 @@ int main(int argc, char ** argv)
 		for (int j = 0; j < 3; ++j)
 		{	
 			v = model.vert(face[j]);
-			screen_coords[j] = Vec3f(int((v.x + 1.) * width / 2.f + 0.5), int((v.y + 1.) * height / 2.f + 0.5),v.z);
+			screen_coords[j] = Vec3f(int((v.x + 1.) * width / 2.f + 0.5), int((v.y + 1.) * height / 2.f + 0.5),-v.z);
 			world_coords[j]  = v;
 		}
 		
@@ -158,15 +233,15 @@ int main(int argc, char ** argv)
 		n.normalize();
 		intensity = n * lightDir;
 		//
-		if (intensity > 0)
-		{	
+	//	if (intensity > 0)
+	//	{	
 			Vec2f uv[3];
-			for (int k = 0; k < 3; ++k)
-			{
-				uv[k] = model.getUV(i, k);
-			}
+	//		for (int k = 0; k < 3; ++k)
+	//		{
+	//			uv[k] = model.getUV(i, k);
+	//		}
 			triangle(screen_coords, uv, image, intensity);
-		}
+	//	}
 	}
 	
 	image.flip_vertically();

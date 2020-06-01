@@ -33,6 +33,7 @@ template<typename T>  struct Vec2{
 			x *= length;
 			y *= length;
 		}
+		
 	}
 	//œÚ¡ø≤Ê≥À
 	inline Vec2<T> crossProductVector(const Vec2<T>&vec)
@@ -85,6 +86,10 @@ template<typename T>  struct Vec3 {
 		z * vec.x - x * vec.z,
 		x * vec.y - y * vec.x
 		);
+	}
+	inline T length()
+	{
+		return sqrt(x*x + y*y + z*z);
 	}
 };
 
