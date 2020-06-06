@@ -38,6 +38,26 @@ Matrix Matrix::operator*(const Matrix& a)
 	return Matrix();
 }
 
+Vec4f Matrix::operator*(const Vec4f & a)
+{	
+	Vec4f temp;
+	for (int i = 0; i < rows; ++i)
+	{
+		for (int j = 0; j < cols; ++j)
+		{	
+			temp.raw[i] += a.raw[j] * m[i][j];
+		}
+	}
+	if (temp.w != 1)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			temp.raw[i] /= temp.w;
+		}
+	}
+	return temp;
+}
+
 Matrix Matrix::transpose()
 {
 	Matrix result(cols, rows);

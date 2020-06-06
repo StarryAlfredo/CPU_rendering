@@ -1,18 +1,29 @@
 ﻿  main.cpp
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(163): warning C4244: “初始化”: 从“T”转换到“int”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(47): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(191): warning C4244: “+=”: 从“T”转换到“unsigned char”，可能丢失数据
           with
           [
               T=float
           ]
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(167): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(167): warning C4244: “参数”: 从“T”转换到“int”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(193): warning C4244: “*=”: 从“T”转换到“unsigned char”，可能丢失数据
           with
           [
               T=float
           ]
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(225): warning C4244: “参数”: 从“int”转换到“const T”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(196): warning C4244: “初始化”: 从“T”转换到“int”，可能丢失数据
           with
           [
               T=float
           ]
+c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(201): warning C4244: “参数”: 从“T”转换到“int”，可能丢失数据
+          with
+          [
+              T=float
+          ]
+c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(244): warning C4244: “参数”: 从“int”转换到“const T”，可能丢失数据
+          with
+          [
+              T=float
+          ]
+c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(264): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
   CPU_Render.vcxproj -> C:\Users\xgm\source\repos\CPU_Render\Debug\CPU_Render.exe
