@@ -3,9 +3,12 @@
 #include<iostream>
 #include<algorithm>
 #include<cmath>
+#include<string>
 #include"tgaimage.h"
 #include"geometry.h"
 #include"model.h"
+#include"renderWindow.h"
+
 
 
 using namespace std;
@@ -14,10 +17,14 @@ using namespace std;
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red   = TGAColor(255, 0, 0, 255);
 const TGAColor green = TGAColor(0, 255, 0, 255);
-const int width = 800;
-const int height = 800;
+const int width	 = 500;
+const int height = 500;
+
+const int SCREEN_WIDTH	= 500;
+const int SCREEN_HEIGHT = 500;
 
 float zBuffer[width * height];
+
 
 Model model("african_head.obj");
 //Model model("cube.obj");
@@ -25,7 +32,7 @@ Model model("african_head.obj");
 
 Matrix LookAtLH(Vec3f EyePosition ,Vec3f FocusPosition ,Vec3f UpDirection) {
 	Matrix view(4,4);
-	
+
 	Vec3f w =   EyePosition - FocusPosition;
 	w.normalize();
 	Vec3f u = UpDirection.crossProduct(w);
@@ -56,7 +63,6 @@ Matrix PerspectiveFovLH(float FovAngle,float Aspect ,float NearZ,float FarZ) {
 
 	return	p;
 }
- 
 
 void line(const Vec2i &t0, const Vec2i &t1,TGAImage &image,const TGAColor &color){	
 	int x0 =t0.x, x1=t1.x, y0=t0.y, y1 = t1.y;
@@ -142,8 +148,8 @@ bool isInTrangle(Vec2f(&t)[3], Vec2f P, Vec3f &barycentric)	//计算重心坐标
 	}
 	
 	return inside;
-
 }
+
 
 void triangle(Vec3f (&t)[3],Vec2f (&uv)[3],TGAImage &image, const float intensity,TGAColor (&Color)[3])
 {
@@ -173,30 +179,25 @@ void triangle(Vec3f (&t)[3],Vec2f (&uv)[3],TGAImage &image, const float intensit
 	for (P.x = box[0].x; P.x <= box[0].y; P.x++) {
 		for (P.y = box[1].x; P.y <= box[1].y; P.y++) {
 
-			if (isInTrangle(abc, Vec2f(P.x, P.y), barycentric))
-			{
+			if (isInTrangle(abc, Vec2f(P.x, P.y), barycentric)){
 				P.z = 0;
 				TGAColor color;
-				for (int i = 0; i < 3; ++i)
-				{
+				for (int i = 0; i < 3; ++i){
 					P.z += barycentric.raw[i] * t[i].z;
 
 				}
 				P.z = 1 / P.z;
 
-				for (int i = 0; i < 3; ++i)
-				{
-					for (int j = 0; j < 3; ++j)
-					{
-						color.raw[i] += Color[j].raw[i] * t[j].z * barycentric.raw[j];
+				for (int i = 0; i < 3; ++i){
+					for (int j = 0; j < 3; ++j){
+						color[i] += Color[j][i] * t[j].z * barycentric.raw[j];
 					}
-					color.raw[i] *= P.z;
+					color[i] *= P.z;
 				}
 				
 				int index = P.y* height  + P.x ;
 			
-				if (P.z > zBuffer[index])
-				{
+				if (P.z > zBuffer[index]){
 					zBuffer[index] = P.z;
 					image.set(P.x, P.y, color);
 				}
@@ -205,67 +206,106 @@ void triangle(Vec3f (&t)[3],Vec2f (&uv)[3],TGAImage &image, const float intensit
 	}
 }
 
-int main(int argc, char ** argv)
-{
-	TGAImage image(width,height,TGAImage::RGB);
+int main(int argc, char ** argv) {
 
+	renderWindow myWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	TGAImage image(width, height, TGAImage::RGB);
 	Vec3f screen_coords[3];
-	Vec3f lightDir(0.0, 0.0, 1.0f);
-	vector<int> face,face2;
-	Matrix view		   = LookAtLH(Vec3f(0, 1, 2),Vec3f(0,0,1),Vec3f(0,1,0));
-	Matrix perspective = PerspectiveFovLH(90,width/height,0.1f, 200.f);
 
-	
+	vector<int> face, face2;
+	Matrix view = LookAtLH(Vec3f(0, 1, 2), Vec3f(0, 0, 1), Vec3f(0, 1, 0));
+	Matrix perspective = PerspectiveFovLH(90, width / height, 0.1f, 200.f);
+
 	float intensity = 1.0f;
-	
-	float minFloat =   -numeric_limits<float>::max();
+
+	float minFloat = -numeric_limits<float>::max();
 
 	for (int i = width * height; i--; zBuffer[i] = minFloat);
-		
+
 	int faces = model.nfaces();
-		
-	for (int i = 0; i < faces ; ++i)
-	{	
+
+	for (int i = 0; i < faces; ++i) {
 		face = model.face(i);
 		Vec3f world_coords[3];
 		Vec3f v;
 		Vec3f u;
 
-		for (int j = 0; j < 3; ++j)
-		{	
+		for (int j = 0; j < 3; ++j) {
 			v = model.vert(face[j]);
-			
-			Vec4f temp(v.x,v.y,v.z,1.0f);
+
+			Vec4f temp(v.x, v.y, v.z, 1.0f);
 			Vec4f temp2 = view * temp;
 			Vec4f s = perspective * temp2;
-			world_coords[j] = Vec3f(temp2.x,temp2.y,temp2.z);
+			world_coords[j] = Vec3f(temp2.x, temp2.y, temp2.z);
 			v = Vec3f(s.x, s.y, v.z);
 
-			screen_coords[j] = Vec3f(int((v.x + 1.) * width / 2.f + 0.5), int((v.y + 1.) * height / 2.f + 0.5),s.z);
+			screen_coords[j] = Vec3f(int((v.x + 1.) * width / 2.f + 0.5), int((v.y + 1.) * height / 2.f + 0.5), s.z);
 			//光栅化
 		}
-		
+
 		Vec3f AB = world_coords[0] - world_coords[1];
 		Vec3f AC = world_coords[1] - world_coords[2];
-		Vec3f n  = AB.crossProduct(AC);
+		Vec3f n = AB.crossProduct(AC);
 		TGAColor c[3] = { TGAColor(255,0,0,255),TGAColor(0,255,0,255),TGAColor(0,0,255,255) };
 
 		n.normalize();
-		intensity = n * lightDir;
+		//intensity = n * lightDir;
 		//intensity = intensity;
 
-		if (intensity > 0)
-		{	
+		if (intensity > 0) {
 			Vec2f uv[3];
 			//for (int k = 0; k < 3; ++k)
 			//{
 			//	uv[k] = model.getUV(i, k);
 			//}
-			TGAColor color = TGAColor(255 * intensity, 255 * intensity , 255 * intensity, 255);
-			triangle(screen_coords, uv, image, intensity ,c);
+			TGAColor color = TGAColor(255 * intensity, 255 * intensity, 255 * intensity, 255);
+			triangle(screen_coords, uv, image, intensity, c);
 		}
 	}
+
 	image.flip_vertically();
 	image.write_tga_file("output.tga");
+
+	std::vector<std::string> file;
+
+	file.push_back(string("output.tga"));
+
+	myWindow.loadTexture(file);
+	
+	SDL_Event e;
+	bool quit = false;
+	
+	while (!quit) {
+		while (SDL_PollEvent(&e)) {
+			if (e.type == SDL_QUIT){
+				quit = true;
+			}
+			if(e.type == SDL_KEYDOWN){
+				switch (e.key.keysym.sym)
+				{
+					case SDLK_1:
+						break;
+					case SDLK_2:
+						break;
+					case SDLK_3:
+						break;
+					case SDLK_4:
+						break;
+					case SDLK_5:
+						break;
+					case SDLK_6:
+						break;
+				}
+			}
+			if (e.type == SDL_MOUSEBUTTONDOWN) {
+				quit = true;
+			}
+		}
+		myWindow.clearRender();
+		myWindow.renderTexture(10,10,0);
+		myWindow.renderPresent();
+		SDL_Delay(1000);
+	}
 	return 0;
 }
