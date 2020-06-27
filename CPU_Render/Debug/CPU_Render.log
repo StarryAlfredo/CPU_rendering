@@ -1,32 +1,68 @@
-﻿  main.cpp
+﻿  Shader.cpp
 c:\users\xgm\source\repos\cpu_render\cpu_render\head\tgaimage.h(60): warning C4244: “=”: 从“float”转换到“unsigned char”，可能丢失数据
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(54): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(193): warning C4244: “+=”: 从“T”转换到“unsigned char”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\shader.cpp(63): warning C4244: “=”: 从“const _Ty”转换到“T”，可能丢失数据
+          with
+          [
+              _Ty=float
+          ]
+          and
+          [
+              T=int
+          ]
+c:\users\xgm\source\repos\cpu_render\cpu_render\shader.cpp(64): warning C4244: “=”: 从“const _Ty”转换到“T”，可能丢失数据
+          with
+          [
+              _Ty=float
+          ]
+          and
+          [
+              T=int
+          ]
+c:\users\xgm\source\repos\cpu_render\cpu_render\shader.cpp(65): warning C4244: “=”: 从“const _Ty”转换到“T”，可能丢失数据
+          with
+          [
+              _Ty=float
+          ]
+          and
+          [
+              T=int
+          ]
+c:\users\xgm\source\repos\cpu_render\cpu_render\shader.cpp(66): warning C4244: “=”: 从“const _Ty”转换到“T”，可能丢失数据
+          with
+          [
+              _Ty=float
+          ]
+          and
+          [
+              T=int
+          ]
+c:\users\xgm\source\repos\cpu_render\cpu_render\shader.cpp(89): warning C4244: “参数”: 从“T”转换到“const T”，可能丢失数据
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\users\xgm\source\repos\cpu_render\cpu_render\shader.cpp(113): warning C4244: “=”: 从“T”转换到“Uint8”，可能丢失数据
           with
           [
               T=float
           ]
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(195): warning C4244: “*=”: 从“T”转换到“unsigned char”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\shader.cpp(114): warning C4244: “=”: 从“T”转换到“Uint8”，可能丢失数据
           with
           [
               T=float
           ]
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(198): warning C4244: “初始化”: 从“T”转换到“int”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\shader.cpp(115): warning C4244: “=”: 从“T”转换到“Uint8”，可能丢失数据
           with
           [
               T=float
           ]
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(202): warning C4244: “参数”: 从“T”转换到“int”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\shader.cpp(157): warning C4244: “参数”: 从“int”转换到“const T”，可能丢失数据
           with
           [
               T=float
           ]
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(243): warning C4244: “参数”: 从“int”转换到“const T”，可能丢失数据
-          with
-          [
-              T=float
-          ]
-c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(262): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
-  renderWindow.cpp
-  正在生成代码...
   CPU_Render.vcxproj -> C:\Users\xgm\source\repos\CPU_Render\Debug\CPU_Render.exe

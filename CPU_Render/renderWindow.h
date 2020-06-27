@@ -15,9 +15,12 @@ public:
 	void renderTexture(int x, int y,int index);
 	void renderTexture(int x, int y, int w, int h,int index);
 	void loadTexture(const std::vector<std::string> &file);
-	void clearRender() { SDL_RenderClear(ren); }
+	void clearRender() { SDL_SetRenderDrawColor(ren, 0x70, 0x80, 0x90, 0xFF);  SDL_RenderClear(ren); }
 	void renderPresent() { SDL_RenderPresent(ren); }
-
+	void DrawPointWithColor(SDL_Color &r,int x,int y);
+	void ResetMouse(Uint32 x, Uint32 y);
+	int	 GetWidth();
+	int  GetHeight();
 private:
 	int windowHeight;
 	int windowWidth;

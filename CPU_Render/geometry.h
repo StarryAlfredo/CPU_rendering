@@ -65,10 +65,11 @@ template<typename T>  struct Vec3 {
 	Vec3() :x(0), y(0) ,z(0){}
 	Vec3(const T& _u, const T& _v ,const T& _w) :x(_u), y(_v), z(_w) {}
 	Vec3(const Vec3<T>& V) :x(V.x), y(V.y), z(V.z) {}
-	inline Vec3<T> operator + (const Vec3<T>& V) { return Vec3<T>(x + V.x, y + V.y, z - V.z); }
+	inline Vec3<T> operator + (const Vec3<T>& V) { return Vec3<T>(x + V.x, y + V.y, z + V.z); }
 	inline Vec3<T> operator - (const Vec3<T>& V) { return Vec3<T>(x - V.x, y - V.y, z - V.z); }
 	inline T	   operator * (const Vec3<T>& V) { return (V.x * x + V.y * y + V.z * z); }
 	inline Vec3<T> operator * (T f)				 { return Vec3<T>(f * x, f * y, f *z); }
+	inline Vec3<T> ColorProduct(const Vec3<T>& V) { return Vec3<T>(V.x * x, V.y * y, V.z * z); }
 
 
 	//向量标准化
@@ -110,6 +111,7 @@ template<typename T>  struct Vec4 {
 	Vec4() :x(0), y(0), z(0),w(0) {}
 	Vec4(const T& _u, const T& _v, const T& _z, const T& _w) :x(_u), y(_v), z(_z),w(_w) {}
 	Vec4(const Vec4<T>& V) :x(V.x), y(V.y), z(V.z),w(V.w) {}
+	Vec4(const Vec3<T> &V, float _w):x(V.x), y(V.y), z(V.z), w(_w){}
 	inline Vec4<T> operator + (const Vec3<T>& V) { return Vec4<T>(x + V.x, y + V.y, z - V.z,1.0); }
 	inline Vec4<T> operator - (const Vec3<T>& V) { return Vec4<T>(x - V.x, y - V.y, z - V.z,1.0); }
 	inline T	   operator * (const Vec3<T>& V) { return (V.x * x + V.y * y + V.z * z); }
@@ -160,16 +162,27 @@ class Matrix {
 	std::vector<std::vector<float>> m;
 	int rows, cols;
 public:
-	Matrix(int r = DECIMAL_DIG, int c = DBL_DECIMAL_DIG);
+	Matrix(int r = DEFAULT_ALLOC, int c = DEFAULT_ALLOC);
+	//Matrix();
 	inline int nrows();
 	inline int ncols();
 	
 	static Matrix identity(int dimensions);
 	std::vector<float>& operator [](const int i);
-	Matrix operator * (const Matrix& a);
+	//Matrix operator * (const Matrix& a);
 	Vec4f  operator * (const Vec4f& a);
 	Matrix transpose();
 	Matrix inverse();
 };
 
+//绕y轴旋转
+Matrix MatrixRotationY(float rad);
+//绕x轴旋转
+Matrix MatrixRotationX(float rad);
+//绕z轴旋转
+Matrix MatrixRotationZ(float rad);
+//绕任意轴旋转
+Matrix MatrixRotationAxis(Vec3f &axi, float theta);
+
+float VectorGetY(Vec3f &f);
 #endif

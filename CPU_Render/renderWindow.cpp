@@ -14,6 +14,9 @@ renderWindow::renderWindow(int w, int h,std::string title):windowHeight(h),windo
 		SDL_DestroyWindow(win);
 		SDL_Quit();
 	}
+	else {
+		SDL_SetRenderDrawColor(ren, 0x2F, 0x4F, 0x4F, 0xFF);
+	}
 
 	if (win == nullptr) {
 		logSDLError(std::cout, "CreateWindow");
@@ -53,6 +56,30 @@ void renderWindow::loadTexture(const std::vector<std::string>& file){
 			logSDLError(std::cout, "CreateTextureFormSurface");
 		}
 	}
+}
+
+void renderWindow::DrawPointWithColor(SDL_Color & r,int x,int y)
+{	
+	SDL_SetRenderDrawColor(ren, r.r, r.g, r.b, r.a);
+	SDL_RenderDrawPoint(ren, x, y);
+}
+
+void renderWindow::ResetMouse(Uint32 x, Uint32 y)
+{
+	SDL_WarpMouseInWindow(win,
+		x,
+		y);
+
+}
+
+int renderWindow::GetWidth()
+{	
+	return windowWidth;
+}
+
+int renderWindow::GetHeight()
+{	
+	return windowWidth;
 }
 
 void renderWindow::renderTexture(int x, int y,int index){
