@@ -2,7 +2,7 @@
 #define __IMAGE_H__
 
 #include <fstream>
-
+#include"Math.h"
 #pragma pack(push,1)
 struct TGA_Header {
 	char idlength;
@@ -50,6 +50,28 @@ struct TGAColor {
 		for (int i = bpp; i < 4; i++) {
 			bgra[i] = 0;
 		}
+	}
+
+	TGAColor& operator * (Vec3f& f) {
+		for(int i =0; i < 3; ++i) {
+			bgra[i] *= f[i];
+		}
+		return *this;
+	}
+
+
+	TGAColor operator + (TGAColor& t) {
+		for (int i = 0; i < 3; ++i) {
+			bgra[i] += t[i];
+		}
+		return *this;
+	}
+
+	TGAColor operator - (TGAColor& t) {
+		for (int i = 0; i < 3; ++i) {
+			bgra[i] -= t[i];
+		}
+		return *this;
 	}
 
 	unsigned char& operator[](const int i) { return bgra[i]; }

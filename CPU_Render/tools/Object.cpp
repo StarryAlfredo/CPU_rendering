@@ -28,6 +28,9 @@ void Object::Draw(Pipeline& pipeline,renderWindow& ren)
 			}
 			pipeline.PipelineRun(ren);
 		}
+
+		ren.DrawPointWithColor();
+
 	} else if (shaderName_ == "SkyBoxShader") {
 		
 	} else if (shaderName_ == "PBRShader") {

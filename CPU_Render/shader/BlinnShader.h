@@ -5,6 +5,7 @@
 #include"../tools/Light.h"
 #include"../tools/model.h"
 #include"../tools/Material.h"
+#include"../tools/Color.h"
 struct blinn_vertexIn{
 	Vec3f PosL;
 	Vec3f NormalL;
@@ -23,13 +24,15 @@ struct blinn_uniform {
 	Model*  Model;
 	Matrix*  worldMatrix;
 	Material* material;
+	float alpha_cut;
+
 };
 
 class BlinnShader: public Shader{
 
 public:
 	Vec4f  vertexShader(void *vIn, void *vOut, void *uniform) override;
-	SDL_Color pixelShader (void *pIn, void * uniform, bool& discard, int backface) override;
+	TGAColor pixelShader (void *pIn, void * uniform, bool& discard, int backface) override;
 };
 
 #endif

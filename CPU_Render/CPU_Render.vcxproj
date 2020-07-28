@@ -157,6 +157,7 @@
     <ClCompile Include="shader\Pipeline.cpp" />
     <ClCompile Include="shader\Shader.cpp" />
     <ClCompile Include="tools\camera.cpp" />
+    <ClCompile Include="tools\Color.cpp" />
     <ClCompile Include="tools\Light.cpp" />
     <ClCompile Include="tools\Math.cpp" />
     <ClCompile Include="tools\model.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="shader\Shader.h" />
     <ClInclude Include="shader\SkyboxShader.h" />
     <ClInclude Include="tools\camera.h" />
+    <ClInclude Include="tools\Color.h" />
     <ClInclude Include="tools\Light.h" />
     <ClInclude Include="tools\Material.h" />
     <ClInclude Include="tools\Math.h" />

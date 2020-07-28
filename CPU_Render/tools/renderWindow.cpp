@@ -4,7 +4,9 @@ renderWindow::renderWindow(int w, int h,std::string title):windowHeight(h),windo
 	
 
 	zBuffer = new float[w * h];
+	colorBuffer = new TGAColor[w * h];
 	ClearZBuffer();
+	ClearColor();
 	
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		logSDLError(std::cout, "SDL_Init");
@@ -39,6 +41,9 @@ renderWindow::~renderWindow(){
 	SDL_Quit();
 	if (zBuffer != nullptr)
 		delete zBuffer;
+	if (colorBuffer) {
+		delete colorBuffer;
+	}
 }
 
 void renderWindow::renderTexture(int x, int y, int w, int h,int index){
@@ -64,10 +69,24 @@ void renderWindow::loadTexture(const std::vector<std::string>& file){
 	}
 }
 
-void renderWindow::DrawPointWithColor(SDL_Color & r,int x,int y)
+void renderWindow::ClearColor() {
+	memset(colorBuffer, 0, sizeof(TGAColor) * GetWidth() * GetHeight());
+}
+
+void renderWindow::DrawPointWithColor()
 {	
-	SDL_SetRenderDrawColor(ren, r.r, r.g, r.b, r.a);
-	SDL_RenderDrawPoint(ren, x, y);
+	int nums = GetWidth() * GetHeight();
+	int x, y;
+	int height = GetHeight();
+	int width = GetWidth();
+	for (int i = 0; i < nums; ++i) {
+		x = i % width ; 
+		y = i / width;
+		TGAColor color = colorBuffer[i];
+		SDL_SetRenderDrawColor(ren, color[0], color[1], color[2], color[3]);
+		SDL_RenderDrawPoint(ren, x, y);
+	}
+	
 }
 
 void renderWindow::ResetMouse(Uint32 x, Uint32 y)

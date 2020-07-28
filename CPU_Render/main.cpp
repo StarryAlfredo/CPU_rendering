@@ -17,7 +17,7 @@ StartTime:2020.5.30
 #include"../tools/Light.h"
 #include"../tools/Object.h"
 #include"../shader/Pipeline.h"
-
+#include"tools/Color.h"
 using namespace std;
 
 
@@ -99,7 +99,7 @@ int main(int argc, char ** argv) {
 	//设置材质
 	Material material;
 	material.name = "stone";
-	material.DiffuseAlbedo = Vec4f(0.8f, 0.8f, 0.8f, 1.0f);
+	material.DiffuseAlbedo = Vec4f(0.8f, 0.8f, 0.8f, 0.5f);
 	material.Roughness = Vec4f(0.5f, 0.5f, 0.5f, 0.0f);
 
 	//世界矩阵
@@ -119,7 +119,10 @@ int main(int argc, char ** argv) {
 
 	Shader *shader = new BlinnShader;
 	Pipeline pipeline(shader, sizeof(blinn_vertexIn), sizeof(blinn_vertexOut), sizeof(blinn_uniform), (void *)&uniform);
-	
+	pipeline.factor_src = BLEND_FACTOR_SRC_ALPHA;
+	pipeline.op = BLEND_OP_ADD;
+	pipeline.factor_dst = BLEND_FACTOR_INV_SRC_ALPHA;
+
 	SDL_Event e;
 	bool quit = false;
 	Uint32 start = SDL_GetTicks();

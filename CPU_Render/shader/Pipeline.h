@@ -10,6 +10,7 @@
 #define PIPELINE_H
 #include"../shader/Shader.h"
 #include<cassert>
+#include "../tools/Color.h"
 
 #define MAX_VERTEX 20
 #define EPSILON 1e-5
@@ -24,6 +25,11 @@ class Pipeline{
 	~Pipeline();
 	void* GetShaderVertexIn(int i);
 	void PipelineRun(renderWindow& ren);
+
+ public:
+	BLEND_FACTOR factor_src;
+	BLEND_FACTOR factor_dst;
+	BLEND_OP	 op;
 	
  private:
 	bool RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWindow& ren);

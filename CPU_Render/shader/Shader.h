@@ -9,7 +9,7 @@
 class Shader {
 public:	
 	virtual Vec4f  vertexShader(void *vIn ,void *vOut, void *uniform) = 0;
-	virtual SDL_Color pixelShader(void *pIn ,void * uniform,bool &discard, int backface) = 0;
+	virtual TGAColor pixelShader(void *pIn ,void * uniform,bool &discard, int backface) = 0;
 public:
 	virtual ~Shader();
 	Shader(){}

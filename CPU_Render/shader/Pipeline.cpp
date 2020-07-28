@@ -294,10 +294,15 @@ void Pipeline::DrawFragment(Vec2i P, float depth, int backface, renderWindow& re
 
 	bool discord = false;
 
-	SDL_Color color = shader_->pixelShader(shader_vertex_out_, shader_uniform_, discord, backface);
+	TGAColor color = shader_->pixelShader(shader_vertex_out_, shader_uniform_, discord, backface);
 
-	ren.DrawPointWithColor(color, P.x, P.y);
-	
+	if (discord) {
+		return;
+	}
+
+	TGAColor result = OMSetBlendState(color, ren.colorBuffer[index], op, factor_src, factor_dst);
+
+	ren.colorBuffer[index] = result;
 	ren.zBuffer[index] = depth;
 }
 
