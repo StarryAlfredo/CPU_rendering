@@ -150,7 +150,7 @@ public:
 	Vec4(const T& _u, const T& _v, const T& _z, const T& _w) :x(_u), y(_v), z(_z),w(_w) {}
 	Vec4(const Vec4<T>& V) :x(V.x), y(V.y), z(V.z),w(V.w) {}
 	Vec4(const Vec3<T> &V, float _w):x(V.x), y(V.y), z(V.z), w(_w){}
-
+	
 
 public:
 	Vec4<T> operator + (const Vec4<T>& V) { return Vec4<T>(x + V.x, y + V.y, z - V.z, V.w + V.w); }
@@ -158,13 +158,14 @@ public:
 	Vec4<T> operator * (const Vec4<T>& V) { return Vec4<T>(x * V.x, y * V.y, z * V.z, V.w * V.w); }
 	Vec4<T> operator * (T f)			  { return Vec4<T>(f * x  , f * y  , f * z  , w ); }
 	T&      operator[] (int i) { return raw[i]; }
-
+	
 	//向量模长
 	float length(){ return sqrt(x*x + y * y + z * z + w * w); }
 	//向量点乘
 	T Dot(const Vec4<T>&vec) { return vec.x * x + vec.y * y + vec.z * z + vec.w * w; }
 	//插值
 	Vec4<T> Lerp(Vec4<T>B, float t) { return (*this * (1 - t) + t * B); }
+	Vec3<T> rgb() { return Vec3<T>(r, g, b); }
 };
 
 

@@ -40,7 +40,7 @@ SDL_Color  BlinnShader::pixelShader(void* pIn, void * uniform,  bool& discard, i
 		for (int i = 0; i < size; ++i) {
 			if (dynamic_cast<PointLight*>(light[i]) != nullptr || dynamic_cast<SpotLight*>(light[i]))
 				light[i]->SetDirection(PIN->PosW);
-			intensity = light[i]->ColorShader(PIN->NormalW);
+			intensity = light[i]->ColorShader(PIN->NormalW,*(UNIFORM->material));
 		}
 	}
 	

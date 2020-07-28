@@ -4,6 +4,7 @@
 #include"../tools/camera.h"
 #include"../tools/Light.h"
 #include"../tools/model.h"
+#include"../tools/Material.h"
 struct blinn_vertexIn{
 	Vec3f PosL;
 	Vec3f NormalL;
@@ -18,15 +19,12 @@ struct blinn_vertexOut{
 
 struct blinn_uniform {
 	std::vector<Light*>	 *	light;
-	Camera				 *	camera;
-	Model				 *  Model;
-	Matrix				 *  worldMatrix;
+	Camera*	camera;
+	Model*  Model;
+	Matrix*  worldMatrix;
+	Material* material;
 };
-struct blinn_material {
-	Vec4f	DiffuseAlbedo;
-	Vec4f	FresnelR0;
-	float	Roughness;
-};
+
 class BlinnShader: public Shader{
 
 public:

@@ -84,7 +84,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\xgm\source\repos\CPU_Render\CPU_Render\Head;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -101,7 +101,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\xgm\source\repos\CPU_Render\CPU_Render\Head;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -171,6 +171,7 @@
     <ClInclude Include="shader\SkyboxShader.h" />
     <ClInclude Include="tools\camera.h" />
     <ClInclude Include="tools\Light.h" />
+    <ClInclude Include="tools\Material.h" />
     <ClInclude Include="tools\Math.h" />
     <ClInclude Include="tools\model.h" />
     <ClInclude Include="tools\Object.h" />

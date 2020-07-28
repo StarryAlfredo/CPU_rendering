@@ -58,9 +58,7 @@ int main(int argc, char ** argv) {
 
 	//资源定义
 	blinn_uniform uniform;
-	
-	model = new Model("assets//helmet//helmet.obj");
-	
+	model = new Model("assets//helmet//helmet.obj");	
 	FirstPersonCamera *camera = new FirstPersonCamera;
 	
 	//相机初始化
@@ -76,44 +74,33 @@ int main(int argc, char ** argv) {
 	
 	//平行光
 	dLight.SetAmbientLight(Vec3f(0.3f,0.3f,0.3f));
-	dLight.SetambientK(Vec3f(0.2f, 0.2f, 0.2f));
-	dLight.SetDirection(Vec3f(0.f,0.f, -1.f)); 
-	dLight.SetdiffuseK(Vec3f(0.8f, 0.8f, 0.8f));
-
+	dLight.SetDirection(Vec3f(0.f,0.0f, 1.0f)); 
 	dLight.SetLightOfDiffuse(Vec3f(0.8f, 0.8f, 0.8f));
 	dLight.SetLightOfSpecular(Vec3f(0.8f,0.8f,0.8f));
-	dLight.SetSpecularK(Vec3f(0.3f, 0.3f, 0.3f));
 	dLight.SetEyePosition(eyePosition);
-	dLight.SetM(200.f);
 
 	//点光
-	pointLight.SetPosition(Vec3f(0.f,0.f,1.5f));
+	pointLight.SetPosition(Vec3f(0.f,10.f,3.5f));
 	pointLight.SetAmbientLight(Vec3f(0.3f, 0.3f, 0.3f));
-	pointLight.SetambientK(Vec3f(0.1f, 0.1f, 0.1f));
-	pointLight.SetdiffuseK(Vec3f(0.8f, 0.8f, 0.8f));
-
 	pointLight.SetLightOfDiffuse(Vec3f(0.8f, 0.8f, 0.8f));
 	pointLight.SetLightOfSpecular(Vec3f(0.5f, 0.5f, 0.5f));
-	pointLight.SetSpecularK(Vec3f(0.1f, 0.1f, 0.1f));
 	pointLight.SetEyePosition(eyePosition);
-	pointLight.SetM(50.f);
 
 	//聚光灯
 	spotLight.SetPosition(Vec3f(0.f, 5.0f, 0.0f));
 	spotLight.SetAmbientLight(Vec3f(0.3f, 0.3f, 0.3f));
-	spotLight.SetambientK(Vec3f(0.8f, 0.8f, 0.8f));
-	spotLight.SetdiffuseK(Vec3f(0.8f, 0.8f, 0.8f));
 	spotLight.SetSpotDir(Vec3f(0.f, 6.f, 0.f));
 	spotLight.SetSpot(2.f);
-
 	spotLight.SetLightOfDiffuse(Vec3f(0.8f, 0.8f, 0.8f));
 	spotLight.SetLightOfSpecular(Vec3f(0.5f, 0.5f, 0.5f));
-	spotLight.SetSpecularK(Vec3f(0.3f, 0.3f, 0.3f));
 	spotLight.SetEyePosition(eyePosition);
-	spotLight.SetM(2.f);
-
-	
 	light.push_back(&dLight);
+
+	//设置材质
+	Material material;
+	material.name = "stone";
+	material.DiffuseAlbedo = Vec4f(0.8f, 0.8f, 0.8f, 1.0f);
+	material.Roughness = Vec4f(0.5f, 0.5f, 0.5f, 0.0f);
 
 	//世界矩阵
 	Matrix matrix;
@@ -124,7 +111,9 @@ int main(int argc, char ** argv) {
 	uniform.light = &light;
 	uniform.Model = model;
 	uniform.worldMatrix = &matrix;
+	uniform.material = &material;
 
+	//创建渲染对象
 	string name = "BlinnShader";
 	Object object(name, model);
 

@@ -83,5 +83,8 @@
     <ClInclude Include="shader\SkyboxShader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="tools\Material.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

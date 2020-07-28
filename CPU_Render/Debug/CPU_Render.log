@@ -1,12 +1,4 @@
-﻿  BlinnShader.cpp
+﻿  main.cpp
 c:\users\xgm\source\repos\cpu_render\cpu_render\tools\tgaimage.h(60): warning C4244: “=”: 从“float”转换到“unsigned char”，可能丢失数据
-c:\users\xgm\source\repos\cpu_render\cpu_render\shader\blinnshader.cpp(48): warning C4244: “*=”: 从“T”转换到“unsigned char”，可能丢失数据
-          with
-          [
-              T=float
-          ]
-  Math.cpp
-  Object.cpp
-c:\users\xgm\source\repos\cpu_render\cpu_render\tools\tgaimage.h(60): warning C4244: “=”: 从“float”转换到“unsigned char”，可能丢失数据
-  正在生成代码...
+c:\users\xgm\source\repos\cpu_render\cpu_render\main.cpp(107): warning C4305: “参数”: 从“double”到“float”截断
   CPU_Render.vcxproj -> C:\Users\xgm\source\repos\CPU_Render\Debug\CPU_Render.exe
