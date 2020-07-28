@@ -18,48 +18,69 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Cpp\tgaimage.cpp">
+    <ClCompile Include="tools\tgaimage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="model.cpp">
+    <ClCompile Include="shader\Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="geometry.cpp">
+    <ClCompile Include="shader\Pipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="renderWindow.cpp">
+    <ClCompile Include="tools\camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
+    <ClCompile Include="tools\Light.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="camera.cpp">
+    <ClCompile Include="tools\model.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
+    <ClCompile Include="tools\renderWindow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="shader\BlinnShader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\Math.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\Object.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Head\tgaimage.h">
+    <ClInclude Include="tools\tgaimage.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="geometry.h">
+    <ClInclude Include="tools\camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="model.h">
+    <ClInclude Include="tools\Light.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="renderWindow.h">
+    <ClInclude Include="tools\Math.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
+    <ClInclude Include="tools\model.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
+    <ClInclude Include="tools\Object.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
+    <ClInclude Include="tools\renderWindow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="shader\BlinnShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="shader\Pipeline.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="shader\Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="shader\SkyboxShader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

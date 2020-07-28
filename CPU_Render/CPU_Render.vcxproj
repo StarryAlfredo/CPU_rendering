@@ -90,6 +90,7 @@
       <AdditionalIncludeDirectories>C:\Users\xgm\source\repos\CPU_Render\CPU_Render\Head;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\Doc\SDL2-2.0.12\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -106,6 +107,7 @@
       <AdditionalIncludeDirectories>C:\Users\xgm\source\repos\CPU_Render\CPU_Render\Head;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\Doc\SDL2-2.0.12\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -150,23 +152,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="Cpp\tgaimage.cpp" />
-    <ClCompile Include="geometry.cpp" />
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="model.cpp" />
-    <ClCompile Include="renderWindow.cpp" />
-    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="shader\BlinnShader.cpp" />
+    <ClCompile Include="shader\Pipeline.cpp" />
+    <ClCompile Include="shader\Shader.cpp" />
+    <ClCompile Include="tools\camera.cpp" />
+    <ClCompile Include="tools\Light.cpp" />
+    <ClCompile Include="tools\Math.cpp" />
+    <ClCompile Include="tools\model.cpp" />
+    <ClCompile Include="tools\Object.cpp" />
+    <ClCompile Include="tools\renderWindow.cpp" />
+    <ClCompile Include="tools\tgaimage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="geometry.h" />
-    <ClInclude Include="Head\tgaimage.h" />
-    <ClInclude Include="model.h" />
-    <ClInclude Include="renderWindow.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Light.h" />
+    <ClInclude Include="shader\BlinnShader.h" />
+    <ClInclude Include="shader\Pipeline.h" />
+    <ClInclude Include="shader\Shader.h" />
+    <ClInclude Include="shader\SkyboxShader.h" />
+    <ClInclude Include="tools\camera.h" />
+    <ClInclude Include="tools\Light.h" />
+    <ClInclude Include="tools\Math.h" />
+    <ClInclude Include="tools\model.h" />
+    <ClInclude Include="tools\Object.h" />
+    <ClInclude Include="tools\renderWindow.h" />
+    <ClInclude Include="tools\tgaimage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

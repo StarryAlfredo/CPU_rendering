@@ -1,13 +1,22 @@
-//列矩阵,右手坐标系
+/*
+****************************
+
+Object -> Pipeline -> Shader
+Author:Alfredo
+StartTime:2020.5.30
+
+****************************
+*/
 
 #include<iostream>
 #include<algorithm>
 #include<cmath>
 #include<cstdio>
 #include<string>
-#include"Shader.h"
-#include"Light.h"
-
+#include"../shader/Shader.h"
+#include"../tools/Light.h"
+#include"../tools/Object.h"
+#include"../shader/Pipeline.h"
 
 using namespace std;
 
@@ -18,8 +27,8 @@ const int SCREEN_HEIGHT = 600;
 renderWindow myWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 //摄像机的位置
-Vec3f eyePosition(0.f, 0, 2.f);
-Vec3f focusePosition(0 ,0 ,-1.f);
+Vec3f eyePosition(0.f, 0.f, -1.8f);
+Vec3f focusePosition(0.f, 0.f,1.f);
 Vec3f up(0,1.f,0);
 
 //光源
@@ -45,31 +54,12 @@ TGAImage image(SCREEN_HEIGHT, SCREEN_WIDTH, TGAImage::RGB);
 Model * model;
 
 
-void pipelineRun(Shader &myShader){
-
-	int face = model->nfaces();	
-	Vec3f screen[3];
-	Vec3f normal[3];
-	Vec2f uv[3];
-
-	for (int i = 0; i < face; ++i){
-		
-		TGAColor color[3] = { TGAColor(255, 255, 255, 255),TGAColor(255, 255, 255, 255),TGAColor(255, 255, 255, 255) };
-		
-		for (int j = 0; j < 3; ++j){
-			screen[j] = model->vert(i, j);	
-			normal[j] = model->normal(i, j);
-			uv[j] = model->uv(i,j);
-		}
-		triangle(uv,screen,myShader,myWindow ,zBuffer,color,normal,light, model);
-	}
-}
-
 int main(int argc, char ** argv) {
 
-	model = new Model("african_head.obj");
-
-	Vec3f screen_coords[3];
+	//资源定义
+	blinn_uniform uniform;
+	
+	model = new Model("assets//helmet//helmet.obj");
 	
 	FirstPersonCamera *camera = new FirstPersonCamera;
 	
@@ -87,7 +77,7 @@ int main(int argc, char ** argv) {
 	//平行光
 	dLight.SetAmbientLight(Vec3f(0.3f,0.3f,0.3f));
 	dLight.SetambientK(Vec3f(0.2f, 0.2f, 0.2f));
-	dLight.SetDirection(Vec3f(0.f,0.f, 1.f)); 
+	dLight.SetDirection(Vec3f(0.f,0.f, -1.f)); 
 	dLight.SetdiffuseK(Vec3f(0.8f, 0.8f, 0.8f));
 
 	dLight.SetLightOfDiffuse(Vec3f(0.8f, 0.8f, 0.8f));
@@ -125,13 +115,21 @@ int main(int argc, char ** argv) {
 	
 	light.push_back(&dLight);
 
-	MyShader shader(model,camera);
-	
-	//运行管线
-	//pipelineRun(shader);
-	//DEBUG输出结果
-	//image.flip_vertically();
-	//image.write_tga_file("output.tga");
+	//世界矩阵
+	Matrix matrix;
+	matrix = MatrixRotationX(- M_PI / 2.f);
+
+	//初始化资源
+	uniform.camera = camera;
+	uniform.light = &light;
+	uniform.Model = model;
+	uniform.worldMatrix = &matrix;
+
+	string name = "BlinnShader";
+	Object object(name, model);
+
+	Shader *shader = new BlinnShader;
+	Pipeline pipeline(shader, sizeof(blinn_vertexIn), sizeof(blinn_vertexOut), sizeof(blinn_uniform), (void *)&uniform);
 	
 	SDL_Event e;
 	bool quit = false;
@@ -148,6 +146,7 @@ int main(int argc, char ** argv) {
 	
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
 
+
 	while (!quit) {
 		currentTime = SDL_GetTicks();
 		deltaTime = (float)(currentTime - lastTime ) * frequnce;
@@ -157,12 +156,12 @@ int main(int argc, char ** argv) {
 			deltaTime = 0.f;
 		}
 		
-		while (SDL_PollEvent(&e)){
+		while (SDL_PollEvent(&e)) {
 			
 			if (quit) {
 				break;
 			}
-			if (e.type == SDL_QUIT){
+			if (e.type == SDL_QUIT) {
 				quit = true;
 			}
 			if (e.type == SDL_MOUSEMOTION) {
@@ -174,20 +173,20 @@ int main(int argc, char ** argv) {
 				}
 
 				//float offsetX = (e.motion.x - mouseLastX) * mouse_sensitivity;
-				//float offsetY = (e.motion.y - mouseLastY)  * mouse_sensitivity;
-				Uint32 offsetX = (e.motion.x - mouseLastX);
-				Uint32 offsetY = (e.motion.y - mouseLastY);
+				// float offsetY = (e.motion.y - mouseLastY)  * mouse_sensitivity;
+				//Uint32 offsetX = (e.motion.x - mouseLastX);
+				//Uint32 offsetY = (e.motion.y - mouseLastY);
+				
 			
-			
-				printf("%d  %d  %d\n",offsetX , e.motion.x, e.motion.y);
+				//printf("%d  %d  %d\n",offsetX , e.motion.x, e.motion.y);
 				
 				//x = (x - inputObject.Delta.X * SENSITIVITY.X * ZoomSensitivity()) % (math.pi * 2)
 				//y = math.clamp(y - inputObject.Delta.Y * SENSITIVITY.Y * ZoomSensitivity(), MIN_Y, MAX_Y)
 
-					yaw = offsetX * deltaTime * mouse_sensitivity;
+				//	yaw = offsetX * deltaTime * mouse_sensitivity;
 				//	pitch += offsetY;
 				
-			//	camera->RotateY(yaw);
+				//	camera->RotateY(yaw);
 				//camera->Pitch(pitch * deltaTime);
 
 				//myWindow.ResetMouse(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
@@ -196,11 +195,11 @@ int main(int argc, char ** argv) {
 				//mouseLastX = 300;
 				//mouseLastY = 300;
 
-			  //  camera->SetDirty(true);
+			   // camera->SetDirty(true);
 			}
 			
-			if(e.type == SDL_KEYDOWN){
-				switch (e.key.keysym.sym){
+			if(e.type == SDL_KEYDOWN) {
+				switch (e.key.keysym.sym) {
 					case SDLK_w:		
 						camera->Walk(3.0f * deltaTime);
 						camera->SetDirty(true);
@@ -210,11 +209,11 @@ int main(int argc, char ** argv) {
 						camera->SetDirty(true);
 						break;
 					case SDLK_a:
-						camera->Strafe(3.0f * deltaTime);
+						camera->Strafe(-3.0f * deltaTime);
 						camera->SetDirty(true);
 						break;
 					case SDLK_d:
-						camera->Strafe(-3.0f * deltaTime);
+						camera->Strafe(3.0f * deltaTime);
 						camera->SetDirty(true);
 						break;
 
@@ -246,10 +245,9 @@ int main(int argc, char ** argv) {
 			spotLight.SetEyePosition(camera->GetPosition());
 
 		}
-		memset(zBuffer ,0xfe , sizeof(zBuffer));
-	
+
 		myWindow.clearRender();
-		pipelineRun(shader);
+		object.Draw(pipeline, myWindow);
 		myWindow.renderPresent();	
 
 	}
@@ -258,6 +256,7 @@ int main(int argc, char ** argv) {
 	
 	delete model;
 	delete camera;
+	delete shader;
 
 	return 0;
 }
