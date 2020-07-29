@@ -177,7 +177,6 @@ bool isInTrangle(Vec2f(&raster)[3], Vec2f P, Vec3f &barycentric) {//计算重心坐标
 		float w = abc[i].CrossProductValue(AP);
 		
 		inside &= (w == 0 ? (abc[i].y == 0 && abc[i].x > 0) || abc[i].y > 0 : w >= 0);
-
 		barycentric.raw[(i + 2) % 3] = w / S;
 	}
 	return inside;

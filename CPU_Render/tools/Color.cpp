@@ -5,7 +5,7 @@ Vec3f GetFactor(BLEND_FACTOR& factor, TGAColor colorStr,TGAColor colorDst) {
 		case BLEND_FACTOR_ZERO:
 			return Vec3f(0.0f, 0.0f, 0.0f);
 		case BLEND_FACTOR_ONE:
-			return Vec3f(0.0f, 0.0f, 0.0f);
+			return Vec3f(1.0f, 1.0f, 1.0f);
 		case BLEND_FACTOR_SRC_COLOR:
 			return Vec3f(colorStr[0]/255.f, colorStr[1]/255.f, colorStr[2]/255.f);
 		case BLEND_FACTOR_INV_STR_COLOR:

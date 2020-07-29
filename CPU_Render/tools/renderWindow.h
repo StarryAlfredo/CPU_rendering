@@ -1,6 +1,6 @@
 
-#ifndef  _RENDERWINDOW_
-#define  _RENDERWINDOW_
+#ifndef  RENDERWINDOW_H
+#define  RENDERWINDOW_H
 #include<string>
 #include<iostream>
 #include<vector>

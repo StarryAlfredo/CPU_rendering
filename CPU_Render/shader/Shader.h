@@ -1,5 +1,5 @@
-#ifndef _SHADER_
-#define _SHADER_
+#ifndef SHADER_H
+#define SHADER_H
 #include"../tools/Math.h"
 #include<SDL.h>
 #include"../tools/renderWindow.h"

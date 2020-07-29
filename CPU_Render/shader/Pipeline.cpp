@@ -144,12 +144,19 @@ Pipeline::Pipeline(Shader* shader,
 	int sizeof_vertex_in,
 	int sizeof_vertex_out,
 	int sizeof_uniform,
-	void* uniform )
+	void* uniform,
+	bool  wireframe)
 	: shader_(shader),
 	sizeof_vertex_in_(sizeof_vertex_in),
 	sizeof_vertex_out_(sizeof_vertex_out),
-	sizeof_uniform_(sizeof_uniform) {
+	sizeof_uniform_(sizeof_uniform),
+    wireframe_(wireframe) {
 	
+	zBuffer_is_write = true;
+	color_op_ = BLEND_OP_ADD;
+	color_factor_src_ = BLEND_FACTOR_ONE;
+	color_factor_dst_ = BLEND_FACTOR_ZERO;
+
 	for(int i = 0; i < 3; ++i)
 		shader_vertex_in_[i] = malloc(sizeof_vertex_in);
 
@@ -217,6 +224,10 @@ void Pipeline::PipelineRun(renderWindow& ren){
 
 }
 
+void Pipeline::SetWireframe(bool temp) {
+	wireframe_ = temp;
+}
+
 bool Pipeline::RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWindow& ren) {
 
 	int width = ren.GetWidth();
@@ -246,6 +257,16 @@ bool Pipeline::RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWind
 	for (int i = 0; i < 3; ++i) {
 		w_argum[i] = 1.f / screen_depth[i];
 	}
+
+	if (wireframe_) {
+		for (int i = 0; i < 3; ++i) {
+			Vec2i start = Vec2i(screen_coords[i].x, screen_coords[i].y);
+			Vec2i end = Vec2i(screen_coords[(i + 1) % 3].x, screen_coords[(i + 1) % 3].y);
+			DrawFragment(start, end, ren);
+		}
+		return false;
+	}
+
 
 	Vec2i box[2];
 
@@ -300,10 +321,58 @@ void Pipeline::DrawFragment(Vec2i P, float depth, int backface, renderWindow& re
 		return;
 	}
 
-	TGAColor result = OMSetBlendState(color, ren.colorBuffer[index], op, factor_src, factor_dst);
+	TGAColor result = OMSetBlendState(color, ren.colorBuffer[index], color_op_, color_factor_src_, color_factor_dst_);
 
 	ren.colorBuffer[index] = result;
-	ren.zBuffer[index] = depth;
+	
+	if(zBuffer_is_write)
+		ren.zBuffer[index] = depth;
+}
+
+void Pipeline::DrawFragment(Vec2i start, Vec2i End, renderWindow & ren) {
+	bool steep = false;
+
+	int x0 = start.x;
+	int y0 = start.y;
+	int x1 = End.x;
+	int y1 = End.y;
+	if (std::abs(x0 - x1) < std::abs(y0 - y1)) {
+		std::swap(x0, y0);
+		std::swap(x1, y1);
+		steep = true;
+	}
+	if (x0 > x1) {
+		std::swap(x0, x1);
+		std::swap(y0, y1);
+	}
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+	int derror2 = std::abs(dy) * 2;
+	int error2 = 0;
+	int y = y0;
+	TGAColor color(255, 255, 255, 255);
+	int width = ren.GetWidth();
+
+	for (int x = x0; x <= x1; x++) {
+		
+		int temp_x = x;
+		int temp_y = y;
+		
+		if (steep) {
+			std::swap(temp_x, temp_y);
+		}
+
+		int dex = temp_x + temp_y * width;
+		
+		ren.colorBuffer[dex] = color;
+		
+		error2 += derror2;
+		if (error2 > dx) {
+			y += (y1 > y0 ? 1 : -1);
+			error2 -= dx * 2;
+		}
+	}
+
 }
 
 bool Pipeline::IsVertexVisible(Vec4f & v) {

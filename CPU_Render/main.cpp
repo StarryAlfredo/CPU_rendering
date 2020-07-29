@@ -67,7 +67,6 @@ int main(int argc, char ** argv) {
 	camera->UpdateViewMatrix();
 	
 	//光源初始化
-
 	PointLight pointLight;
 	DirectionalLight dLight;
 	SpotLight		 spotLight;
@@ -118,27 +117,20 @@ int main(int argc, char ** argv) {
 	Object object(name, model);
 
 	Shader *shader = new BlinnShader;
-	Pipeline pipeline(shader, sizeof(blinn_vertexIn), sizeof(blinn_vertexOut), sizeof(blinn_uniform), (void *)&uniform);
-	pipeline.factor_src = BLEND_FACTOR_SRC_ALPHA;
-	pipeline.op = BLEND_OP_ADD;
-	pipeline.factor_dst = BLEND_FACTOR_INV_SRC_ALPHA;
+	bool wireFrame = false;
+	Pipeline pipeline(shader, sizeof(blinn_vertexIn), sizeof(blinn_vertexOut), sizeof(blinn_uniform), (void *)&uniform, wireFrame);
 
 	SDL_Event e;
 	bool quit = false;
 	Uint32 start = SDL_GetTicks();
 	
 	//SDL_TimerID timer = SDL_AddTimer(16, callback, &shader);
-	
-	
 	Uint32 currentTime = 0;
 	Uint32 lastTime = 0;
 	float  deltaTime = 0;
 	float  frequnce = 1.0f / 1000;
 
-	
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
-
-
 	while (!quit) {
 		currentTime = SDL_GetTicks();
 		deltaTime = (float)(currentTime - lastTime ) * frequnce;
@@ -208,7 +200,11 @@ int main(int argc, char ** argv) {
 						camera->Strafe(3.0f * deltaTime);
 						camera->SetDirty(true);
 						break;
-
+					case SDLK_e:
+						pipeline.zBuffer_is_write = !pipeline.zBuffer_is_write;
+						pipeline.color_factor_src_ = pipeline.zBuffer_is_write ? BLEND_FACTOR_ONE : BLEND_FACTOR_SRC_ALPHA;
+						pipeline.color_factor_dst_ = pipeline.zBuffer_is_write ? BLEND_FACTOR_ZERO : BLEND_FACTOR_INV_SRC_ALPHA;
+						break;
 					case SDLK_F1:
 						light.pop_back();
 						light.push_back(&dLight);
@@ -220,6 +216,10 @@ int main(int argc, char ** argv) {
 					case SDLK_F3:
 						light.pop_back();
 						light.push_back(&spotLight);
+						break;
+					case SDLK_q:
+						wireFrame = !wireFrame;
+						pipeline.SetWireframe(wireFrame);
 						break;
 					case SDLK_ESCAPE:
 						quit = true;
