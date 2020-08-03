@@ -84,7 +84,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\xgm\source\repos\CPU_Render\CPU_Render\Head;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -101,7 +101,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\xgm\source\repos\CPU_Render\CPU_Render\Head;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -156,6 +156,7 @@
     <ClCompile Include="shader\BlinnShader.cpp" />
     <ClCompile Include="shader\Pipeline.cpp" />
     <ClCompile Include="shader\Shader.cpp" />
+    <ClCompile Include="shader\SkyboxShader.cpp" />
     <ClCompile Include="tools\camera.cpp" />
     <ClCompile Include="tools\Color.cpp" />
     <ClCompile Include="tools\Light.cpp" />

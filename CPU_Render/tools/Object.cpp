@@ -11,7 +11,7 @@ Object::~Object() {
 	
 }
 
-void Object::Draw(Pipeline& pipeline,renderWindow& ren)
+void Object::Draw(Pipeline& pipeline, renderWindow& ren)
 {	
 	if (shaderName_ == "BlinnShader") {
 		int faceOfNum = mesh_->nfaces();
@@ -29,10 +29,20 @@ void Object::Draw(Pipeline& pipeline,renderWindow& ren)
 			pipeline.PipelineRun(ren);
 		}
 
-		ren.DrawPointWithColor();
+		
 
 	} else if (shaderName_ == "SkyBoxShader") {
-		
+		int faceOfNum = mesh_->nfaces();
+
+		for (int i = 0; i < faceOfNum; ++i) {
+			for (int j = 0; j < 3; ++j) {
+				Vec3f pos = mesh_->vert(i, j);
+				skyboxshader_vertex_in* vertex_In = (skyboxshader_vertex_in*)pipeline.GetShaderVertexIn(j);
+				vertex_In->PosL = pos;
+			}
+			pipeline.PipelineRun(ren);
+
+		}
 	} else if (shaderName_ == "PBRShader") {
 
 

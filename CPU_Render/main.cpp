@@ -27,15 +27,15 @@ const int SCREEN_HEIGHT = 600;
 renderWindow myWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 //摄像机的位置
-Vec3f eyePosition(0.f, 0.f, -1.8f);
-Vec3f focusePosition(0.f, 0.f,1.f);
+Vec3f eyePosition(0.f, 0.f, 0.0f);
+Vec3f focusePosition(0.f, 0.f, 1.f);
 Vec3f up(0,1.f,0);
 
 //光源
 std::vector<Light *> light;
 
 //视口
-float nearZ    = .1f  ;
+float nearZ    = .1f;
 float farZ	   = 100.f;
 float FovAngle = 90;
 
@@ -51,14 +51,18 @@ float pitch  =  0.0f;
 float zBuffer[SCREEN_HEIGHT * SCREEN_WIDTH];
 
 TGAImage image(SCREEN_HEIGHT, SCREEN_WIDTH, TGAImage::RGB);
-Model * model;
+Model * model_of_helmet, *model_of_sphere;
 
 
 int main(int argc, char ** argv) {
 
 	//资源定义
-	blinn_uniform uniform;
-	model = new Model("assets//helmet//helmet.obj");	
+	blinn_uniform blin_uniform;
+	skyboxshader_uniform sky_uniform;
+	model_of_helmet = new Model("assets//helmet//helmet.obj");
+	model_of_sphere = new Model("assets//sphere//sphere.obj");
+	model_of_sphere->LoadCubeTexture("assets//sky//sunset//sunset.");
+
 	FirstPersonCamera *camera = new FirstPersonCamera;
 	
 	//相机初始化
@@ -103,22 +107,44 @@ int main(int argc, char ** argv) {
 
 	//世界矩阵
 	Matrix matrix;
-	matrix = MatrixRotationX(- M_PI / 2.f);
+	matrix =  MatrixTranslation(Vec3f(0.0f, 0.0f, 2.0f)) * MatrixRotationX(- M_PI / 2.f) ;
 
-	//初始化资源
-	uniform.camera = camera;
-	uniform.light = &light;
-	uniform.Model = model;
-	uniform.worldMatrix = &matrix;
-	uniform.material = &material;
+	//初始化头盔资源
+	blin_uniform.camera = camera;
+	blin_uniform.light = &light;
+	blin_uniform.Model = model_of_helmet;
+	blin_uniform.worldMatrix = &matrix;
+	blin_uniform.material = &material;
+	int blinn_vertex_in_size = sizeof(blinn_vertexIn);
+	int blinn__vertex_out_size = sizeof(blinn_vertexOut);
+	int blinn_uniform_size = sizeof(blinn_uniform);
+
+	//初始化天空盒资源
+	Matrix matrix_sphere = MatrixScale(Vec3f(1000.0f, 1000.0f, 1000.f)) * MatrixRotationX(M_PI);
+	sky_uniform.Model = model_of_sphere;
+	sky_uniform.worldMatrix = &matrix_sphere;
+	sky_uniform.camera = camera;
+	int sky_vertex_in_size = sizeof(skyboxshader_vertex_in);
+	int sky_vertex_out_size = sizeof(skyboxshader_vertex_out);
+	int sky_uniform_size = sizeof(skyboxshader_uniform);
 
 	//创建渲染对象
-	string name = "BlinnShader";
-	Object object(name, model);
+	Object object_of_helment(string("BlinnShader"), model_of_helmet);
+	Object object_of_sphere(string("SkyBoxShader"), model_of_sphere);
 
-	Shader *shader = new BlinnShader;
+	Shader *shader_of_blinn = new BlinnShader;
+	Shader *shader_of_sky = new SkyboxShader;
+
 	bool wireFrame = false;
-	Pipeline pipeline(shader, sizeof(blinn_vertexIn), sizeof(blinn_vertexOut), sizeof(blinn_uniform), (void *)&uniform, wireFrame);
+
+	//不同的着色器渲染管线
+	Pipeline pipeline_of_blinn(shader_of_blinn, blinn_vertex_in_size,blinn__vertex_out_size ,blinn_uniform_size , (void *)&blin_uniform, wireFrame);
+	pipeline_of_blinn.zBufferState = true;
+	pipeline_of_blinn.backCull = true;
+	
+	Pipeline pipeline_of_sky(shader_of_sky, sky_vertex_in_size,sky_vertex_out_size, sky_uniform_size, (void *)&sky_uniform, wireFrame);
+	pipeline_of_sky.backCull = false;
+	pipeline_of_sky.zBufferState = false;
 
 	SDL_Event e;
 	bool quit = false;
@@ -200,10 +226,14 @@ int main(int argc, char ** argv) {
 						camera->Strafe(3.0f * deltaTime);
 						camera->SetDirty(true);
 						break;
+					case SDLK_SPACE:
+						camera->UP(-3.0f * deltaTime);
+						camera->SetDirty(true);
+						break;
 					case SDLK_e:
-						pipeline.zBuffer_is_write = !pipeline.zBuffer_is_write;
-						pipeline.color_factor_src_ = pipeline.zBuffer_is_write ? BLEND_FACTOR_ONE : BLEND_FACTOR_SRC_ALPHA;
-						pipeline.color_factor_dst_ = pipeline.zBuffer_is_write ? BLEND_FACTOR_ZERO : BLEND_FACTOR_INV_SRC_ALPHA;
+						pipeline_of_blinn.zBuffer_is_write = !pipeline_of_blinn.zBuffer_is_write;
+						pipeline_of_blinn.color_factor_src_ = pipeline_of_blinn.zBuffer_is_write ? BLEND_FACTOR_ONE : BLEND_FACTOR_SRC_ALPHA;
+						pipeline_of_blinn.color_factor_dst_ = pipeline_of_blinn.zBuffer_is_write ? BLEND_FACTOR_ZERO : BLEND_FACTOR_INV_SRC_ALPHA;
 						break;
 					case SDLK_F1:
 						light.pop_back();
@@ -219,7 +249,7 @@ int main(int argc, char ** argv) {
 						break;
 					case SDLK_q:
 						wireFrame = !wireFrame;
-						pipeline.SetWireframe(wireFrame);
+						pipeline_of_blinn.SetWireframe(wireFrame);
 						break;
 					case SDLK_ESCAPE:
 						quit = true;
@@ -238,17 +268,22 @@ int main(int argc, char ** argv) {
 
 		}
 
-		myWindow.clearRender();
-		object.Draw(pipeline, myWindow);
+		myWindow.clearRender();	
+		object_of_sphere.Draw(pipeline_of_sky, myWindow);
+		object_of_helment.Draw(pipeline_of_blinn, myWindow);
+		
+		myWindow.DrawPointWithColor();
 		myWindow.renderPresent();	
 
 	}
 
 	//SDL_RemoveTimer(timer);
 	
-	delete model;
+	delete model_of_helmet;
+	delete model_of_sphere;
 	delete camera;
-	delete shader;
+	delete shader_of_blinn;
+	delete shader_of_sky;
 
 	return 0;
 }

@@ -52,7 +52,7 @@ void Camera::LookAtLH(Vec3f EyePosition, Vec3f FocusPosition, Vec3f UpDirection)
 //	mView[3] = std::vector<float>{ 0,	 0,	  0, 1 };
 }
 
-void Camera::PerspectiveFovLH(float FovAngle, float Aspect, float NearZ, float FarZ){
+void Camera::PerspectiveFovLH(float FovAngle, float Aspect, float NearZ, float FarZ) {
 	mAspect = Aspect;
 	mFOV    = FovAngle;
 	mNearZ  = NearZ;
@@ -69,13 +69,13 @@ void Camera::PerspectiveFovLH(float FovAngle, float Aspect, float NearZ, float F
 	mProjrct[3] = std::vector<float>{ 0,					0,				-1 ,															0 };
 }
 
-FirstPersonCamera::FirstPersonCamera(){
+FirstPersonCamera::FirstPersonCamera() {
 }
 
-FirstPersonCamera::~FirstPersonCamera(){
+FirstPersonCamera::~FirstPersonCamera() {
 }
 
-void FirstPersonCamera::SetPosition(Vec3f & v){
+void FirstPersonCamera::SetPosition(Vec3f & v) {
 	mPosition = v;
 }
 
@@ -131,7 +131,11 @@ void FirstPersonCamera::RotateY(float rad){
 	mRight.normalize();
 	mUp.normalize();
 
-}	
+}
+void FirstPersonCamera::UP(float d) {
+	mPosition.y = d  + mPosition.y;
+}
+
 
 
 

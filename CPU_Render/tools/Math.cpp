@@ -30,6 +30,24 @@ std::vector<float>& Matrix::operator[](const int i)
 	return m[i];
 }
 
+Matrix Matrix::operator*(Matrix a) {
+	Matrix r;
+
+	float temp;
+
+	for (int i = 0; i < 4; i++) {
+		for(int k = 0; k < 4; k++) {
+			temp = m[i][k];
+			for (int j = 0; j < 4; ++j) {
+				r[i][j] = r[i][j] + a[k][j] * temp;
+			}
+		}
+
+	}
+
+	return r;
+}
+
 
 Vec4f Matrix::operator*(const Vec4f & a)
 {	
@@ -158,26 +176,58 @@ Matrix MatrixRotationAxis(Vec3f & axi, float theta){
 		return r;
 }
 
+Matrix MatrixScale(Vec3f scale) {
+	Matrix r;
+	r = r.identity(4);
+	r[0][0] = scale[0];
+	r[1][1] = scale[1];
+	r[2][2] = scale[2];
+	return r;
+}
+
+Matrix MatrixTranslation(Vec3f trans) {
+	Matrix r;
+	r = r.identity(4);
+	r[0][3] = trans[0];
+	r[1][3] = trans[1];
+	r[2][3] = trans[2];
+	return r;
+}
+
 
 float VectorGetY(Vec3f & f){ return f.Dot(Vec3f(0, 1, 0)); }
+
 
 bool isInTrangle(Vec2f(&raster)[3], Vec2f P, Vec3f &barycentric) {//计算重心坐标
 	
 	bool  inside = true;
 	
-	Vec2f AP;
-	
 	Vec2f abc[] = { raster[1] - raster[0] ,raster[2] - raster[1] ,raster[0] - raster[2] };
+	Vec2f ac = raster[2] - raster[0];
 	
-	float S = abc[0].CrossProductValue(raster[2] - raster[0]);		//待优化
-
+	Vec2f AP = P - raster[0];
+	
+	float S = 1.f /(abc[0].CrossProductValue(ac));		
+/*
 	for (int i = 0; i < 3; ++i) {	
 		AP = P - raster[i];
 		
-		float w = abc[i].CrossProductValue(AP);
+		float w = AP.CrossProductValue(abc[i]);
 		
-		inside &= (w == 0 ? (abc[i].y == 0 && abc[i].x > 0) || abc[i].y > 0 : w >= 0);
-		barycentric.raw[(i + 2) % 3] = w / S;
+		inside &=(w >= 0);
+
+		barycentric.raw[(i + 2)%3] = w * S;
 	}
+*/
+	AP = P - raster[0];
+	float s = AP.CrossProductValue(ac) * S;
+	float t = abc[0].CrossProductValue(AP) * S;
+	float q = 1 - s - t;
+	inside = ((s >= 0) & (t >= 0) & (q >= 0));
+
+	barycentric.x = q;
+	barycentric.y = s;
+	barycentric.z = t;
+
 	return inside;
 }

@@ -28,6 +28,9 @@ bool IsInsidePlane(Vec4f& coord, plane plane_t) {
 		return coord.z <= +coord.w;
 	case NEGATIVE_Z:
 		return coord.z >= -coord.w;
+	default:
+		assert(0);
+		return 0;
 	}														
 }
 
@@ -49,24 +52,11 @@ float GetInsersectRatio(Vec4f& pre, Vec4f& cur, plane plane_t) {
 			return (pre.w - pre.z) / ((pre.w - pre.z) - (cur.w - cur.z));
 		case NEGATIVE_Z:
 			return (pre.w + pre.z) / ((pre.w + pre.z) - (cur.w + cur.z));
+		default:
+			assert(0);
+			break;
 	}
 }
-
-
-bool IsBackFace(Vec3f t[3]) {
-	Vec3f a = t[0];
-	Vec3f b = t[1];
-	Vec3f c = t[2];
-
-	float signed_area = 0.0f;
-
-	signed_area += a.x * b.y - a.y * b.x;
-	signed_area += b.x * c.y - c.x * b.y;
-	signed_area += c.x * a.y - c.y * a.x;
-
-	return signed_area <= 0;
-}
-
 
 int HomogeneousClipping(plane plane_t, int num_vertex, int varying_num_floats,
 	Vec4f in_coords[MAX_VERTEX], void* in_varyings[MAX_VERTEX],
@@ -88,25 +78,19 @@ int HomogeneousClipping(plane plane_t, int num_vertex, int varying_num_floats,
 
 		if (pre_inside != cur_inside) {
 			float ratio = GetInsersectRatio(pre, cur, plane_t);
-
 			out_coords[out_nums] = Lerp(pre, cur, ratio);
-
-			for (int i = 0; i < varying_num_floats; ++i) {
-				float* dest = (float*)out_varyings[i];
-				*dest = Lerp(pre_varyings[i], cur_varyings[i], ratio);
+			float* dest = (float*)out_varyings[out_nums];
+			for (int j = 0; j < varying_num_floats; ++j) {
+				dest[j] = Lerp(pre_varyings[j], cur_varyings[j], ratio);
 			}
 			out_nums += 1;
 		}
 
 		if (cur_inside) {
-
-			Vec4f *dest_coord = &out_coords[out_nums];
+			out_coords[out_nums] = cur;
 			float *dest_varyings = (float*)out_varyings[out_nums];
 			int sizeof_varyings = varying_num_floats * sizeof(float);
-
-			*dest_coord = cur;
- 			memcpy(dest_varyings, cur_varyings, sizeof_varyings);
-
+			memcpy(dest_varyings, cur_varyings, sizeof_varyings);
 			out_nums += 1;
 		}
 
@@ -115,8 +99,6 @@ int HomogeneousClipping(plane plane_t, int num_vertex, int varying_num_floats,
 	assert(out_nums <= MAX_VERTEX);
 	return out_nums;
 }
-
-
 
 #define CLIP_IN2OUT(plane_t)                                                  \
     do {																	  \
@@ -139,6 +121,52 @@ int HomogeneousClipping(plane plane_t, int num_vertex, int varying_num_floats,
     } while (0)
 
 
+int Pipeline::ClippingTraingle() {
+	if (IsVertexVisible(in_coords_[0]) && IsVertexVisible(in_coords_[1]) && IsVertexVisible(in_coords_[2])) {
+		out_coords_[0] = in_coords_[0];
+		out_coords_[1] = in_coords_[1];
+		out_coords_[2] = in_coords_[2];
+
+		//拷贝输出属性
+		memcpy(vertex_out_out_[0], vertex_out_in_[0], sizeof_vertex_out_);
+		memcpy(vertex_out_out_[1], vertex_out_in_[1], sizeof_vertex_out_);
+		memcpy(vertex_out_out_[2], vertex_out_in_[2], sizeof_vertex_out_);
+
+		return 3;
+	}
+	else {
+		
+		int num_of_vertexout_float = sizeof_vertex_out_ / sizeof(float);
+		int nums = 3;
+		CLIP_IN2OUT(POSITIVE_W);
+		CLIP_OUT2IN(POSITIVE_X);
+		CLIP_IN2OUT(NEGATIVE_X);
+		CLIP_OUT2IN(POSITIVE_Y);
+		CLIP_IN2OUT(NEGATIVE_Y);
+		CLIP_OUT2IN(POSITIVE_Z);
+		CLIP_IN2OUT(NEGATIVE_Z);	
+		
+		return nums;
+	}
+}
+
+bool Pipeline::IsVertexVisible(Vec4f & v) {
+	return fabs(v.x) <= v.w && fabs(v.y) <= v.w && fabs(v.z) <= v.w;
+}
+
+bool IsBackFace(Vec3f t[3]) {
+	Vec3f a = t[0];
+	Vec3f b = t[1];
+	Vec3f c = t[2];
+
+	float signed_area = 0.0f;
+
+	signed_area += a.x * b.y - a.y * b.x;
+	signed_area += b.x * c.y - c.x * b.y;
+	signed_area += c.x * a.y - c.y * a.x;
+
+	return signed_area <= 0;
+}
 
 Pipeline::Pipeline(Shader* shader,
 	int sizeof_vertex_in,
@@ -160,7 +188,7 @@ Pipeline::Pipeline(Shader* shader,
 	for(int i = 0; i < 3; ++i)
 		shader_vertex_in_[i] = malloc(sizeof_vertex_in);
 
-	for(int i = 0; i < 10; ++i) {
+	for(int i = 0; i < MAX_VERTEX; ++i) {
 		vertex_out_in_[i] = malloc(sizeof_vertex_out);
 		vertex_out_out_[i] = malloc(sizeof_vertex_out);
 	}
@@ -170,23 +198,14 @@ Pipeline::Pipeline(Shader* shader,
 }
 
 Pipeline::~Pipeline(){
-	
-
-
-	for (int i = 0; i < 3; ++i) {
-		free(shader_vertex_in_[i]);
-	}
-	for (int i = 0; i < 10; ++i) {
-		free(vertex_out_in_[i]);
-		free(vertex_out_out_[i]);
-	}
-
-	free(shader_vertex_out_);
+	SaveDelete();
 }
+
 
 void* Pipeline::GetShaderVertexIn(int i){
 	if (i >= 0 && i < 3)
 		return shader_vertex_in_[i];
+	return nullptr;
 }
 
 void Pipeline::PipelineRun(renderWindow& ren){
@@ -228,6 +247,48 @@ void Pipeline::SetWireframe(bool temp) {
 	wireframe_ = temp;
 }
 
+void Pipeline::ChangeShader(Shader * shader, int sizeof_vertex_in, 
+							int sizeof_vertex_out, int sizeof_uniform, 
+							void * uniform) {
+
+	SaveDelete();
+
+	shader_ = shader;
+	sizeof_vertex_in_ = sizeof_vertex_in;
+	sizeof_vertex_out_ = sizeof_vertex_out;
+	sizeof_uniform_ = sizeof_uniform;
+
+	zBuffer_is_write = true;
+	color_op_ = BLEND_OP_ADD;
+	color_factor_src_ = BLEND_FACTOR_ONE;
+	color_factor_dst_ = BLEND_FACTOR_ZERO;
+
+	for (int i = 0; i < 3; ++i)
+		shader_vertex_in_[i] = malloc(sizeof_vertex_in);
+
+	for (int i = 0; i < MAX_VERTEX; ++i) {
+		vertex_out_in_[i] = malloc(sizeof_vertex_out);
+		vertex_out_out_[i] = malloc(sizeof_vertex_out);
+	}
+
+	shader_vertex_out_ = malloc(sizeof_vertex_out_);
+
+	shader_uniform_ = uniform;
+}
+
+void Pipeline::SaveDelete() {
+	
+	for (int i = 0; i < 3; ++i) {
+		free(shader_vertex_in_[i]);
+	}
+	for (int i = 0; i < MAX_VERTEX; ++i) {
+		free(vertex_out_in_[i]);
+		free(vertex_out_out_[i]);
+	}
+
+	free(shader_vertex_out_);
+}
+
 bool Pipeline::RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWindow& ren) {
 
 	int width = ren.GetWidth();
@@ -242,9 +303,10 @@ bool Pipeline::RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWind
 		ndc_coords[i] = Vec3f(clip_coords[i][0] / clip_coords[i][3], clip_coords[i][1] / clip_coords[i][3], clip_coords[i][2] / clip_coords[i][3]);
 	}
 
-	if(IsBackFace(ndc_coords)) {
-		return true;
+	if (backCull && IsBackFace(ndc_coords)) {
+			return true;
 	}
+	
 	
 	float w_argum[3];
 
@@ -255,7 +317,7 @@ bool Pipeline::RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWind
 	}
 
 	for (int i = 0; i < 3; ++i) {
-		w_argum[i] = 1.f / screen_depth[i];
+		w_argum[i] = 1.f / clip_coords[i].w;
 	}
 
 	if (wireframe_) {
@@ -295,7 +357,15 @@ bool Pipeline::RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWind
 				for (int i = 0; i < 3; ++i) {
 					z += barycentric[i] * w_argum[i];
 				}
+
 				z = 1.f / z;
+
+				if (!zBufferState) {
+					//再插值
+					InterpolateVertexOut(vOut, barycentric, w_argum);
+					//绘制
+					DrawFragment(P, z, 0, ren);
+				}
 				if (z <= ren.zBuffer[index]) {
 					//再插值
 					InterpolateVertexOut(vOut, barycentric, w_argum);
@@ -375,38 +445,8 @@ void Pipeline::DrawFragment(Vec2i start, Vec2i End, renderWindow & ren) {
 
 }
 
-bool Pipeline::IsVertexVisible(Vec4f & v) {
-	return fabs(v.x) <= v.w && fabs(v.x) <= v.w && fabs(v.x) <= v.w;
-}
 
-int Pipeline::ClippingTraingle() {
-	if (IsVertexVisible(in_coords_[0]) && IsVertexVisible(in_coords_[1]) && IsVertexVisible(in_coords_[2])) {
-		out_coords_[0] = in_coords_[0];
-		out_coords_[1] = in_coords_[1];
-		out_coords_[2] = in_coords_[2];
 
-		//拷贝输出属性
-		memcpy(vertex_out_out_[0], vertex_out_in_[0], sizeof_vertex_out_);
-		memcpy(vertex_out_out_[1], vertex_out_in_[1], sizeof_vertex_out_);
-		memcpy(vertex_out_out_[2], vertex_out_in_[2], sizeof_vertex_out_);
-
-		return 3;
-	}
-	else {
-		int nums = 3;
-		int num_of_vertexout_float = sizeof_vertex_out_ / sizeof(float);
-
-		CLIP_IN2OUT(POSITIVE_W);
-		CLIP_OUT2IN(POSITIVE_X);
-		CLIP_IN2OUT(NEGATIVE_X);
-		CLIP_OUT2IN(POSITIVE_Y);
-		CLIP_IN2OUT(NEGATIVE_Y);
-		CLIP_OUT2IN(POSITIVE_Z);
-		CLIP_IN2OUT(NEGATIVE_Z);
-
-		return nums;
-	}
-}
 
 Vec3f Pipeline::Rasterzie(Vec3f& clip_coords, int& width, int& height) {
 	return Vec3f((int)((clip_coords[0] + 1.f) * 0.5f * width + 0.5f), (int)((clip_coords[1] + 1.f) * 0.5f * height + 0.5f), (clip_coords[2] + 1.f) * 0.5f);
@@ -420,6 +460,7 @@ void Pipeline::InterpolateVertexOut(void* vertex_out[3], Vec3f& weights, float w
 	float* str0 = (float*)vertex_out[0];
 	float* str1 = (float*)vertex_out[1];
 	float* str2 = (float*)vertex_out[2];
+
 
 	float weights0 = weight_argum[0] * weights[0];
 	float weights1 = weight_argum[1] * weights[1];

@@ -3,7 +3,7 @@
 #include"../shader/Pipeline.h"
 #include"../tools/model.h"
 #include"../shader/BlinnShader.h"
-
+#include"../shader/SkyboxShader.h"
 class Object{
  public:
 	Object(std::string name_t, Model * model_t);

@@ -27,6 +27,12 @@ class Pipeline{
 	void* GetShaderVertexIn(int i);
 	void PipelineRun(renderWindow& ren);
 	void SetWireframe(bool temp);
+	void ChangeShader(Shader* shader, int sizeof_vertex_in,
+					  int sizeof_vertex_out,
+					  int sizeof_uniform,
+				 	  void* uniform);
+	void SaveDelete();
+	
 
  public:
 	//设置颜色混合或者透明物体
@@ -34,7 +40,8 @@ class Pipeline{
 	BLEND_FACTOR color_factor_dst_;
 	BLEND_OP	 color_op_;
 	bool zBuffer_is_write;
-
+	bool zBufferState;
+	bool backCull;
 	
  private:
 	bool RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWindow& ren);
@@ -45,14 +52,12 @@ class Pipeline{
 	Vec3f Rasterzie(Vec3f& clip_coords, int& width, int& height);
 	void InterpolateVertexOut(void* vertex_out[3], Vec3f& weights, float weight_argum[3]);
 	
-
  private:	
 
 	 Shader* shader_;
 	 int sizeof_vertex_in_;
 	 int sizeof_vertex_out_;
 	 int sizeof_uniform_;
-	 bool blend_;
 	 bool wireframe_;
 	 /* shader var */
 

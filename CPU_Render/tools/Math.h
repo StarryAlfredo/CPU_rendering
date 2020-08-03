@@ -153,10 +153,10 @@ public:
 	
 
 public:
-	Vec4<T> operator + (const Vec4<T>& V) { return Vec4<T>(x + V.x, y + V.y, z - V.z, V.w + V.w); }
-	Vec4<T> operator - (const Vec4<T>& V) { return Vec4<T>(x - V.x, y - V.y, z - V.z, V.w - V.w); }
-	Vec4<T> operator * (const Vec4<T>& V) { return Vec4<T>(x * V.x, y * V.y, z * V.z, V.w * V.w); }
-	Vec4<T> operator * (T f)			  { return Vec4<T>(f * x  , f * y  , f * z  , w ); }
+	Vec4<T> operator + (const Vec4<T>& V) { return Vec4<T>(x + V.x, y + V.y, z - V.z, w + V.w); }
+	Vec4<T> operator - (const Vec4<T>& V) { return Vec4<T>(x - V.x, y - V.y, z - V.z, w - V.w); }
+	Vec4<T> operator * (const Vec4<T>& V) { return Vec4<T>(x * V.x, y * V.y, z * V.z, w * V.w); }
+	Vec4<T> operator * (T f)			  { return Vec4<T>(f * x  , f * y  , f * z  , f * w ); }
 	T&      operator[] (int i) { return raw[i]; }
 	
 	//向量模长
@@ -169,7 +169,6 @@ public:
 };
 
 
-
 typedef Vec3<float>		Vec3f;
 typedef Vec3<int>		Vec3i;
 
@@ -180,6 +179,70 @@ typedef Vec2<float>		Vec2f;
 typedef Vec2<int>		Vec2i;
 typedef Vec3<unsigned char> Color3;
 typedef Vec4<unsigned char> Color4;
+
+
+struct TGAColor {
+	unsigned char bgra[4];
+	unsigned char bytespp;
+
+	TGAColor() : bgra(), bytespp(1) {
+		for (int i = 0; i < 4; i++) bgra[i] = 0;
+	}
+
+	TGAColor(unsigned char R, unsigned char G, unsigned char B, unsigned char A = 255) : bgra(), bytespp(4) {
+		bgra[0] = B;
+		bgra[1] = G;
+		bgra[2] = R;
+		bgra[3] = A;
+	}
+
+	TGAColor(unsigned char v) : bgra(), bytespp(1) {
+		for (int i = 0; i < 4; i++) bgra[i] = 0;
+		bgra[0] = v;
+	}
+
+
+	TGAColor(const unsigned char *p, unsigned char bpp) : bgra(), bytespp(bpp) {
+		for (int i = 0; i < (int)bpp; i++) {
+			bgra[i] = p[i];
+		}
+		for (int i = bpp; i < 4; i++) {
+			bgra[i] = 0;
+		}
+	}
+
+	TGAColor& operator * (Vec3f& f) {
+		for (int i = 0; i < 3; ++i) {
+			bgra[i] *= f[i];
+		}
+		return *this;
+	}
+
+	TGAColor operator + (TGAColor t) {
+		for (int i = 0; i < 3; ++i) {
+			bgra[i] += t[i];
+		}
+		return *this;
+	}
+
+	TGAColor operator - (TGAColor& t) {
+		for (int i = 0; i < 3; ++i) {
+			bgra[i] -= t[i];
+		}
+		return *this;
+	}
+
+	unsigned char& operator[](const int i) { return bgra[i]; }
+
+	TGAColor operator *(float intensity) const {
+		TGAColor res = *this;
+		intensity = (intensity > 1.f ? 1.f : (intensity < 0.f ? 0.f : intensity));
+		for (int i = 0; i < 4; i++) res.bgra[i] = bgra[i] * intensity;
+		return res;
+	}
+};
+
+
 
 const int DEFAULT_ALLOC = 4;
 
@@ -195,7 +258,7 @@ public:
 	
 	static Matrix identity(int dimensions);
 	std::vector<float>& operator [](const int i);
-	//Matrix operator * (const Matrix& a);
+	Matrix operator * (Matrix a);
 	Vec4f  operator * (const Vec4f& a);
 	Matrix transpose();
 	Matrix inverse();
@@ -209,6 +272,10 @@ Matrix MatrixRotationX(float rad);
 Matrix MatrixRotationZ(float rad);
 //绕任意轴旋转
 Matrix MatrixRotationAxis(Vec3f &axi, float theta);
+//放大矩阵
+Matrix MatrixScale(Vec3f scale);
+//平移矩阵
+Matrix MatrixTranslation(Vec3f trans);
 //获得夹角
 float VectorGetY(Vec3f &f);
 //是否在三角形内并获取重心坐标
@@ -218,6 +285,9 @@ inline float Lerp(float p1, float p2, float t) {
 	return  p1 * (1 - t) + p2 * t;
 }
 inline Vec4f Lerp(Vec4f& v1, Vec4f& v2, float t) {
+	return v1 * (1 - t) + v2 * t;
+}
+inline TGAColor Lerp(TGAColor& v1, TGAColor& v2, float t) {
 	return v1 * (1 - t) + v2 * t;
 }
 

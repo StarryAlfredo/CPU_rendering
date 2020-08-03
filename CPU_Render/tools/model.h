@@ -14,6 +14,7 @@ private:
 	TGAImage diffusemap_;
 	TGAImage normalmap_;
 	TGAImage specularmap_;
+	TGAImage skybox_[6];
 	void load_texture(std::string filename, const char *suffix, TGAImage &img);
 public:
 	Model(const char *filename);
@@ -26,7 +27,10 @@ public:
 	Vec3f vert(int iface, int nthvert);
 	Vec2f uv(int iface, int nthvert);
 	TGAColor diffuse(Vec2f uv);
+	TGAColor diffuse(Vec2f uv, int face);
 	float specular(Vec2f uv);
 	std::vector<int> face(int idx);
+	void LoadCubeTexture(std::string filename);
+	TGAColor cube_map(Vec3f Direction);
 };
 #endif //__MODEL_H__

@@ -46,7 +46,7 @@ TGAColor OMSetBlendState(TGAColor  src, TGAColor  dst, BLEND_OP op, BLEND_FACTOR
 			color = src * factor_str + dst * factor_dst;
 			break;
 		case BLEND_OP_MAX:
-			//
+			////
 		case BLEND_OP_MIN:
 			
 		case BLEND_OP_REV_SUBTRACT:

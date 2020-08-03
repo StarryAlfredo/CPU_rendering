@@ -66,6 +66,8 @@ public:
 	void  Pitch(float rad);
 	//左右旋转
 	void  RotateY(float rad);
+	//向上走
+	void UP(float d);
 
 	//更新观察矩阵
 	void UpdateViewMatrix() override;

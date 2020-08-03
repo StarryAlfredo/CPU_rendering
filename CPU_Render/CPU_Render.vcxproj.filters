@@ -51,6 +51,9 @@
     <ClCompile Include="tools\Color.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="shader\SkyboxShader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tools\tgaimage.h">
