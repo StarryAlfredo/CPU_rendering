@@ -9,8 +9,12 @@ Vec4f BlinnShader::vertexShader(void * vIn, void * vOut, void * uniform) {
 	Vec4f PosW = *(UNIFORM->worldMatrix) * Vec4f(VIN->PosL, 1.0f);
 	Vec4f PosH =  (UNIFORM->camera->GetProjection()) * ((UNIFORM->camera->GetView()) * PosW);
 
-	VOUT->NormalW =   VIN->NormalL;
-	VOUT->PosW =  Vec3f(PosW.x, PosW.y, PosW.z);
+	//Vec4f nomalW = *(UNIFORM->worldMatrix) * Vec4f(VIN->NormalL, 1.0f);
+	
+	//VOUT->NormalW = nomalW.rgb().GetNormalize();
+	VOUT->NormalW = VIN->NormalL;
+	VOUT->TangentW = VIN->TangentL;
+	VOUT->PosW = Vec3f(PosW.x, PosW.y, PosW.z);
 	VOUT->Texcoord = VIN->Texcoord;
 
 	return PosH;
@@ -20,6 +24,9 @@ TGAColor  BlinnShader::pixelShader(void* pIn, void * uniform,  bool& discard, in
 	
 	blinn_vertexOut * PIN = static_cast<blinn_vertexOut*>(pIn);
 	blinn_uniform * UNIFORM = static_cast<blinn_uniform*>(uniform);
+
+	Vec3f map_normal = UNIFORM->Model->normal(PIN->Texcoord);
+	Vec3f normal = NormalSampleToWorldSpace(map_normal, PIN->NormalW, PIN->TangentW);
 
 	TGAColor color = UNIFORM->Model->diffuse(PIN->Texcoord);
 
@@ -34,12 +41,13 @@ TGAColor  BlinnShader::pixelShader(void* pIn, void * uniform,  bool& discard, in
 	PIN->NormalW.normalize();
 
 	int size = UNIFORM->light->size();
+
 	std::vector<Light*> &light = *(UNIFORM->light);
 
 	for (int i = 0; i < size; ++i) {
 		if (dynamic_cast<PointLight*>(light[i]) != nullptr || dynamic_cast<SpotLight*>(light[i]))
 			light[i]->SetDirection(PIN->PosW);
-		intensity = light[i]->ColorShader(PIN->NormalW, *(UNIFORM->material));
+		intensity = light[i]->ColorShader(normal, *(UNIFORM->material));
 
 	}
 	color = color * intensity;

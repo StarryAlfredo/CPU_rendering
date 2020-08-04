@@ -10,19 +10,22 @@ struct blinn_vertexIn{
 	Vec3f PosL;
 	Vec3f NormalL;
 	Vec2f Texcoord;
+	Vec3f TangentL;
 };
 
 struct blinn_vertexOut{
 	Vec3f PosW;
 	Vec3f NormalW;
 	Vec2f Texcoord;
+	Vec3f TangentW;
 };
 
 struct blinn_uniform {
-	std::vector<Light*>	 *	light;
+	std::vector<Light*>* light;
 	Camera*	camera;
 	Model*  Model;
-	Matrix*  worldMatrix;
+	Matrix* worldMatrix;
+	Matrix* nomal_Matrix;
 	Material* material;
 	float alpha_cut;
 

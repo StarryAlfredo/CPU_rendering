@@ -11,6 +11,7 @@ private:
 	std::vector<std::vector<Vec3i> > faces_; // attention, this Vec3i means vertex/uv/normal
 	std::vector<Vec3f> norms_;
 	std::vector<Vec2f> uv_;
+	std::vector<Vec3f> tangent_;
 	TGAImage diffusemap_;
 	TGAImage normalmap_;
 	TGAImage specularmap_;
@@ -21,6 +22,7 @@ public:
 	~Model();
 	int nverts();
 	int nfaces();
+	Vec3f tangent(int iface, int nthvert);
 	Vec3f normal(int iface, int nthvert);
 	Vec3f normal(Vec2f uv);
 	Vec3f vert(int i);

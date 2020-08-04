@@ -44,8 +44,19 @@ Model::Model(const char *filename) : verts_(), faces_(), norms_(), uv_(), diffus
 			}
 			faces_.push_back(f);
 		}
+		else if (!line.compare(0, 2, "# ")) {
+			std::string strash;
+			iss >> trash;
+			iss >> strash;
+			Vec3f temp;
+			for(int i = 0; i < 3; ++i) {
+				iss >> temp[i];
+				
+			}
+			tangent_.push_back(temp);
+		}
 	}
-	std::cerr << "# v# " << verts_.size() << " f# " << faces_.size() << " vt# " << uv_.size() << " vn# " << norms_.size() << std::endl;
+	std::cerr << "# v# " << verts_.size() << " f# " << faces_.size() << " vt# " << uv_.size() << " vn# " << norms_.size() << " tangent# " << tangent_.size() << std::endl;
 	load_texture(filename, "_diffuse.tga", diffusemap_);
 	load_texture(filename, "_nm.tga", normalmap_);
 	load_texture(filename, "_spec.tga", specularmap_);
@@ -149,7 +160,11 @@ void Model::load_texture(std::string filename, const char *suffix, TGAImage &img
 
 TGAColor Model::diffuse(Vec2f uvf) {
 
-	float u = uvf[0] * diffusemap_.get_width();
+	int u = uvf[0] * diffusemap_.get_width();
+	int v = uvf[1] * diffusemap_.get_height();
+	return diffusemap_.get(u, v);
+
+/*	float u = uvf[0] * diffusemap_.get_width();
 	float v = uvf[1] * diffusemap_.get_height();
 	
 	Vec2i x[4];
@@ -179,7 +194,7 @@ TGAColor Model::diffuse(Vec2f uvf) {
 	
 	TGAColor result = Lerp(color_A, color_B, t);
 
-	return result;
+	return result;*/
 }
 
 TGAColor Model::diffuse(Vec2f uvf, int face) {
@@ -242,5 +257,11 @@ Vec3f Model::normal(int iface, int nthvert) {
 	int idx = faces_[iface][nthvert][2];
 	Vec3f temp = norms_[idx];
 	temp.normalize();
+	return temp;
+}
+Vec3f Model::tangent(int iface, int nthvert)
+{
+	int idx = faces_[iface][nthvert][2];
+	Vec3f temp = tangent_[idx];
 	return temp;
 }

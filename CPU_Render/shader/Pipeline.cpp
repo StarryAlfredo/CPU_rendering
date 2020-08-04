@@ -354,6 +354,7 @@ bool Pipeline::RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWind
 				int index = P.y * width + P.x;
 				//²åÖµ
 				float z = 0.0f;
+
 				for (int i = 0; i < 3; ++i) {
 					z += barycentric[i] * w_argum[i];
 				}
@@ -444,9 +445,6 @@ void Pipeline::DrawFragment(Vec2i start, Vec2i End, renderWindow & ren) {
 	}
 
 }
-
-
-
 
 Vec3f Pipeline::Rasterzie(Vec3f& clip_coords, int& width, int& height) {
 	return Vec3f((int)((clip_coords[0] + 1.f) * 0.5f * width + 0.5f), (int)((clip_coords[1] + 1.f) * 0.5f * height + 0.5f), (clip_coords[2] + 1.f) * 0.5f);

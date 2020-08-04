@@ -260,6 +260,7 @@ public:
 	std::vector<float>& operator [](const int i);
 	Matrix operator * (Matrix a);
 	Vec4f  operator * (const Vec4f& a);
+	Vec3f  operator * (const Vec3f& a);
 	Matrix transpose();
 	Matrix inverse();
 };
@@ -278,6 +279,8 @@ Matrix MatrixScale(Vec3f scale);
 Matrix MatrixTranslation(Vec3f trans);
 //获得夹角
 float VectorGetY(Vec3f &f);
+//法向量从切线空间转换到世界坐标系
+Vec3f NormalSampleToWorldSpace(Vec3f normalMapSample, Vec3f normalW, Vec3f tangentW);
 //是否在三角形内并获取重心坐标
 bool isInTrangle(Vec2f(&raster)[3], Vec2f P, Vec3f &barycentric);
 
@@ -290,5 +293,6 @@ inline Vec4f Lerp(Vec4f& v1, Vec4f& v2, float t) {
 inline TGAColor Lerp(TGAColor& v1, TGAColor& v2, float t) {
 	return v1 * (1 - t) + v2 * t;
 }
+
 
 #endif

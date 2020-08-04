@@ -35,10 +35,10 @@ Matrix Matrix::operator*(Matrix a) {
 
 	float temp;
 
-	for (int i = 0; i < 4; i++) {
-		for(int k = 0; k < 4; k++) {
+	for (int i = 0; i < rows; i++) {
+		for(int k = 0; k < cols; k++) {
 			temp = m[i][k];
-			for (int j = 0; j < 4; ++j) {
+			for (int j = 0; j < cols; ++j) {
 				r[i][j] = r[i][j] + a[k][j] * temp;
 			}
 		}
@@ -56,6 +56,19 @@ Vec4f Matrix::operator*(const Vec4f & a)
 	{
 		for (int j = 0; j < cols; ++j)
 		{	
+			temp.raw[i] += a.raw[j] * m[i][j];
+		}
+	}
+	return temp;
+}
+
+Vec3f Matrix::operator*(const Vec3f & a)
+{
+	Vec3f temp;
+	for (int i = 0; i < rows; ++i)
+	{
+		for (int j = 0; j < cols; ++j)
+		{
 			temp.raw[i] += a.raw[j] * m[i][j];
 		}
 	}
@@ -197,6 +210,24 @@ Matrix MatrixTranslation(Vec3f trans) {
 
 float VectorGetY(Vec3f & f){ return f.Dot(Vec3f(0, 1, 0)); }
 
+Vec3f NormalSampleToWorldSpace(Vec3f normalMapSample, Vec3f normalW, Vec3f tangentW){
+	Vec3f result;
+	
+	Vec3f N = normalW.GetNormalize();
+	Vec3f T = (tangentW - (N * tangentW.Dot(N))).GetNormalize();
+	Vec3f B = N.CrossProduct(T);
+	
+	Matrix m(3);
+
+	m[0] = std::vector<float>{T.x, B.x, N.x};
+	m[1] = std::vector<float>{T.y, B.y, N.y};
+	m[2] = std::vector<float>{T.z, B.z, N.z};
+
+	result = m * normalW;
+
+	return result;
+}
+
 
 bool isInTrangle(Vec2f(&raster)[3], Vec2f P, Vec3f &barycentric) {//计算重心坐标
 	
@@ -207,7 +238,7 @@ bool isInTrangle(Vec2f(&raster)[3], Vec2f P, Vec3f &barycentric) {//计算重心坐标
 	
 	Vec2f AP = P - raster[0];
 	
-	float S = 1.f /(abc[0].CrossProductValue(ac));		
+	float S = 1.f / (abc[0].CrossProductValue(ac));		
 /*
 	for (int i = 0; i < 3; ++i) {	
 		AP = P - raster[i];

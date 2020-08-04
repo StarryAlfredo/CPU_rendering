@@ -159,7 +159,7 @@ int main(int argc, char ** argv) {
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
 	while (!quit) {
 		currentTime = SDL_GetTicks();
-		deltaTime = (float)(currentTime - lastTime ) * frequnce;
+		deltaTime = (float)(currentTime - lastTime) * frequnce;
 		lastTime = currentTime;
 
 		if (deltaTime < 0.0f) {

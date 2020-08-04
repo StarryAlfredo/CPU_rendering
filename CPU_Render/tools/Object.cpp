@@ -25,6 +25,7 @@ void Object::Draw(Pipeline& pipeline, renderWindow& ren)
 				vertex_In->PosL = pos;
 				vertex_In->NormalL = normal;
 				vertex_In->Texcoord = mesh_->uv(i, j);
+				vertex_In->TangentL = mesh_->tangent(i, j);
 			}
 			pipeline.PipelineRun(ren);
 		}
