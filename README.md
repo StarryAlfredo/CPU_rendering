@@ -28,7 +28,7 @@ ui界面
 
 天空盒：
 
-​	
+![Alt text](https://github.com/StarryAlfredo/CPU_rendering/blob/master/RunningEffectOfRender/skybox.PNG)
 
 法线贴图：
 
@@ -36,7 +36,7 @@ ui界面
 
 阴影贴图：
 
-
+![Alt text](https://github.com/StarryAlfredo/CPU_rendering/blob/master/RunningEffectOfRender/shadow.png)
 
 双线性插值效果：
 
