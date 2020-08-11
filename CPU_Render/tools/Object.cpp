@@ -15,12 +15,12 @@ void Object::Draw(Pipeline& pipeline, renderWindow& ren)
 {	
 	if (shaderName_ == "BlinnShader") {
 		int faceOfNum = mesh_->nfaces();
-		
+		blinn_uniform* uniform = (blinn_uniform*)pipeline.GetUniform();
+
 		for (int i = 0; i < faceOfNum; ++i) {
 			for (int j = 0; j < 3; ++j) {
 				Vec3f pos = mesh_->vert(i, j);
 				Vec3f normal = mesh_->normal(i, j);
-
 				blinn_vertexIn* vertex_In = (blinn_vertexIn*)pipeline.GetShaderVertexIn(j);
 				vertex_In->PosL = pos;
 				vertex_In->NormalL = normal;
@@ -29,7 +29,25 @@ void Object::Draw(Pipeline& pipeline, renderWindow& ren)
 			}
 			pipeline.PipelineRun(ren);
 		}
-
+		if (uniform->shadow) {
+			
+			if(uniform->shadow)
+				memcpy(ren.depthBuffer, ren.zBuffer, sizeof(float) * ren.GetWidth() * ren.GetHeight());
+			uniform->shadow = false;
+			ren.ClearZBuffer();
+			for (int i = 0; i < faceOfNum; ++i) {
+				for (int j = 0; j < 3; ++j) {
+					Vec3f pos = mesh_->vert(i, j);
+					Vec3f normal = mesh_->normal(i, j);
+					blinn_vertexIn* vertex_In = (blinn_vertexIn*)pipeline.GetShaderVertexIn(j);
+					vertex_In->PosL = pos;
+					vertex_In->NormalL = normal;
+					vertex_In->Texcoord = mesh_->uv(i, j);
+					vertex_In->TangentL = mesh_->tangent(i, j);
+				}
+				pipeline.PipelineRun(ren);
+			}
+		}
 		
 
 	} else if (shaderName_ == "SkyBoxShader") {

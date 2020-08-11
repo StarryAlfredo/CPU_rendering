@@ -262,3 +262,7 @@ bool isInTrangle(Vec2f(&raster)[3], Vec2f P, Vec3f &barycentric) {//计算重心坐标
 
 	return inside;
 }
+
+Vec3f Rasterzie(Vec3f clip_coords, int width, int height) {
+	return Vec3f((int)((clip_coords[0] + 1.f) * 0.5f * width ), (int)((clip_coords[1] + 1.f) * 0.5f * height ), (clip_coords[2] + 1.f) * 0.5f);
+}

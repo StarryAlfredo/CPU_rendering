@@ -27,6 +27,7 @@ public:
 	void ClearZBuffer();
 	float* zBuffer;
 	TGAColor* colorBuffer;
+	float* depthBuffer;
 
 private:
 	int windowHeight;

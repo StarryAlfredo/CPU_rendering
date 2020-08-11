@@ -283,7 +283,7 @@ float VectorGetY(Vec3f &f);
 Vec3f NormalSampleToWorldSpace(Vec3f normalMapSample, Vec3f normalW, Vec3f tangentW);
 //是否在三角形内并获取重心坐标
 bool isInTrangle(Vec2f(&raster)[3], Vec2f P, Vec3f &barycentric);
-
+Vec3f Rasterzie(Vec3f clip_coords, int width, int height);
 inline float Lerp(float p1, float p2, float t) { 
 	return  p1 * (1 - t) + p2 * t;
 }

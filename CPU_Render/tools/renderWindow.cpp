@@ -4,7 +4,9 @@ renderWindow::renderWindow(int w, int h,std::string title):windowHeight(h),windo
 	
 
 	zBuffer = new float[w * h];
+	depthBuffer = new float[w * h];
 	colorBuffer = new TGAColor[w * h];
+
 	ClearZBuffer();
 	ClearColor();
 	
@@ -41,6 +43,9 @@ renderWindow::~renderWindow(){
 	SDL_Quit();
 	if (zBuffer != nullptr)
 		delete zBuffer;
+	if (depthBuffer != nullptr) {
+		delete depthBuffer;
+	}
 	if (colorBuffer) {
 		delete colorBuffer;
 	}

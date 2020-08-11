@@ -31,6 +31,7 @@ class Pipeline{
 					  int sizeof_vertex_out,
 					  int sizeof_uniform,
 				 	  void* uniform);
+	void* GetUniform();
 	void SaveDelete();
 	
 
@@ -49,7 +50,7 @@ class Pipeline{
 	void DrawFragment(Vec2i start, Vec2i End, renderWindow& ren);
 	bool IsVertexVisible(Vec4f &v);
 	int  ClippingTraingle();
-	Vec3f Rasterzie(Vec3f& clip_coords, int& width, int& height);
+	//Vec3f Rasterzie(Vec3f& clip_coords, int& width, int& height);
 	void InterpolateVertexOut(void* vertex_out[3], Vec3f& weights, float weight_argum[3]);
 	
  private:	

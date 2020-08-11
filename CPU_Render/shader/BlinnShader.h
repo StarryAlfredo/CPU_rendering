@@ -13,11 +13,12 @@ struct blinn_vertexIn{
 	Vec3f TangentL;
 };
 
-struct blinn_vertexOut{
+struct blinn_vertexOut{	
+	Vec4f depthPos;
 	Vec3f PosW;
 	Vec3f NormalW;
-	Vec2f Texcoord;
 	Vec3f TangentW;
+	Vec2f Texcoord;
 };
 
 struct blinn_uniform {
@@ -27,8 +28,10 @@ struct blinn_uniform {
 	Matrix* worldMatrix;
 	Matrix* nomal_Matrix;
 	Material* material;
+	Matrix* light_vp;
+	renderWindow* ren;
 	float alpha_cut;
-
+	bool shadow;
 };
 
 class BlinnShader: public Shader{

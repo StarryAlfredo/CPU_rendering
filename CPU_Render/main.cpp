@@ -28,8 +28,8 @@ renderWindow myWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 //摄像机的位置
 Vec3f eyePosition(0.f, 0.f, 0.0f);
-Vec3f focusePosition(0.f, 0.f, 1.f);
-Vec3f up(0,1.f,0);
+Vec3f focusePosition(0.0f, 0.0f, 1.0f);
+Vec3f up(0.0f,1.f,0.0f);
 
 //光源
 std::vector<Light *> light;
@@ -51,7 +51,7 @@ float pitch  =  0.0f;
 float zBuffer[SCREEN_HEIGHT * SCREEN_WIDTH];
 
 TGAImage image(SCREEN_HEIGHT, SCREEN_WIDTH, TGAImage::RGB);
-Model * model_of_helmet, *model_of_sphere;
+Model * model_of_helmet, *model_of_sphere, *model_of_plane;//待优化
 
 
 int main(int argc, char ** argv) {
@@ -61,6 +61,8 @@ int main(int argc, char ** argv) {
 	skyboxshader_uniform sky_uniform;
 	model_of_helmet = new Model("assets//helmet//helmet.obj");
 	model_of_sphere = new Model("assets//sphere//sphere.obj");
+	model_of_plane = new Model("assets//plane//plane.obj");
+
 	model_of_sphere->LoadCubeTexture("assets//sky//sunset//sunset.");
 
 	FirstPersonCamera *camera = new FirstPersonCamera;
@@ -76,8 +78,8 @@ int main(int argc, char ** argv) {
 	SpotLight		 spotLight;
 	
 	//平行光
-	dLight.SetAmbientLight(Vec3f(0.3f,0.3f,0.3f));
-	dLight.SetDirection(Vec3f(0.f,0.0f, 1.0f)); 
+	dLight.SetAmbientLight(Vec3f(0.5f,0.5f,0.5f));
+	dLight.SetDirection(Vec3f(0.0f, 0.0f, -1.0f)); 
 	dLight.SetLightOfDiffuse(Vec3f(0.8f, 0.8f, 0.8f));
 	dLight.SetLightOfSpecular(Vec3f(0.8f,0.8f,0.8f));
 	dLight.SetEyePosition(eyePosition);
@@ -106,24 +108,31 @@ int main(int argc, char ** argv) {
 	material.Roughness = Vec4f(0.5f, 0.5f, 0.5f, 0.0f);
 
 	//世界矩阵
-	Matrix matrix;
-	matrix =  MatrixTranslation(Vec3f(0.0f, 0.0f, 2.0f)) * MatrixRotationX(- M_PI / 2.f) ;
-
+	Matrix wMatrix;
+	wMatrix =  MatrixTranslation(Vec3f(0.0f, 0.0f, 2.0f)) * MatrixRotationX((float)(- M_PI)/ 2.f) ;
+	Matrix planeMatrix = MatrixScale(Vec3f(30.0f, 30.0f, 30.0f)) * MatrixTranslation(Vec3f(0.0f, -0.2f, 2.f)) * MatrixRotationX((float)(-M_PI)/ 2);
+	//光源的视口矩阵
+	Matrix lightMatrix;
+	lightMatrix = GetLightMatrix(Vec3f(0.0f, 0.0f, 0.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 0.0f), camera);
 	//初始化头盔资源
 	blin_uniform.camera = camera;
 	blin_uniform.light = &light;
 	blin_uniform.Model = model_of_helmet;
-	blin_uniform.worldMatrix = &matrix;
+	blin_uniform.worldMatrix = &wMatrix;
 	blin_uniform.material = &material;
+	blin_uniform.shadow = true;
+	blin_uniform.light_vp = &lightMatrix;
+	blin_uniform.ren = &myWindow;
 	int blinn_vertex_in_size = sizeof(blinn_vertexIn);
 	int blinn__vertex_out_size = sizeof(blinn_vertexOut);
 	int blinn_uniform_size = sizeof(blinn_uniform);
 
 	//初始化天空盒资源
-	Matrix matrix_sphere = MatrixScale(Vec3f(1000.0f, 1000.0f, 1000.f)) * MatrixRotationX(M_PI);
+	Matrix matrix_sphere = MatrixScale(Vec3f(1000.0f, 1000.0f, 1000.f)) * MatrixRotationX((float)(M_PI));
 	sky_uniform.Model = model_of_sphere;
 	sky_uniform.worldMatrix = &matrix_sphere;
 	sky_uniform.camera = camera;
+
 	int sky_vertex_in_size = sizeof(skyboxshader_vertex_in);
 	int sky_vertex_out_size = sizeof(skyboxshader_vertex_out);
 	int sky_uniform_size = sizeof(skyboxshader_uniform);
@@ -131,6 +140,7 @@ int main(int argc, char ** argv) {
 	//创建渲染对象
 	Object object_of_helment(string("BlinnShader"), model_of_helmet);
 	Object object_of_sphere(string("SkyBoxShader"), model_of_sphere);
+	Object objec_of_plane(string("BlinnShader"), model_of_plane);
 
 	Shader *shader_of_blinn = new BlinnShader;
 	Shader *shader_of_sky = new SkyboxShader;
@@ -270,17 +280,23 @@ int main(int argc, char ** argv) {
 
 		myWindow.clearRender();	
 		object_of_sphere.Draw(pipeline_of_sky, myWindow);
+		blin_uniform.worldMatrix = &wMatrix;
+		blin_uniform.Model = model_of_helmet;
 		object_of_helment.Draw(pipeline_of_blinn, myWindow);
+		
+		blin_uniform.worldMatrix = &planeMatrix;
+		blin_uniform.Model = model_of_plane;
+	    objec_of_plane.Draw(pipeline_of_blinn, myWindow);
 		
 		myWindow.DrawPointWithColor();
 		myWindow.renderPresent();	
-
 	}
 
 	//SDL_RemoveTimer(timer);
 	
 	delete model_of_helmet;
 	delete model_of_sphere;
+	delete model_of_plane;
 	delete camera;
 	delete shader_of_blinn;
 	delete shader_of_sky;

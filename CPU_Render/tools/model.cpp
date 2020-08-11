@@ -160,11 +160,11 @@ void Model::load_texture(std::string filename, const char *suffix, TGAImage &img
 
 TGAColor Model::diffuse(Vec2f uvf) {
 
-	int u = uvf[0] * diffusemap_.get_width();
-	int v = uvf[1] * diffusemap_.get_height();
-	return diffusemap_.get(u, v);
+	//int u = uvf[0] * diffusemap_.get_width();
+	//int v = uvf[1] * diffusemap_.get_height();
+	//return diffusemap_.get(u, v);
 
-/*	float u = uvf[0] * diffusemap_.get_width();
+	float u = uvf[0] * diffusemap_.get_width();
 	float v = uvf[1] * diffusemap_.get_height();
 	
 	Vec2i x[4];
@@ -173,13 +173,13 @@ TGAColor Model::diffuse(Vec2f uvf) {
 	int height = diffusemap_.get_height();
 	int srcU = (int)u, srcV = int(v);
 
-	x[0] = Vec2i(srcU, srcV);
+	x[0] = Vec2i(srcU, srcV); 
 	x[1] = Vec2i(srcU, srcV + 1 > height ? srcV - 1 : srcV + 1);
 	x[2] = Vec2i(srcU + 1 > width ? srcU - 1 : srcU + 1, srcV + 1 > height ? srcV - 1 : srcV + 1);
 	x[3] = Vec2i(srcU + 1 > width ? srcU - 1 : srcU + 1, srcV);
 
-	float s = 1.f - (u - srcU);
-	float t = 1.f - (v - srcV);
+	float s =(u - srcU);
+	float t =(v - srcV);
 
 	TGAColor color_A;
 	TGAColor color_B;
@@ -194,7 +194,7 @@ TGAColor Model::diffuse(Vec2f uvf) {
 	
 	TGAColor result = Lerp(color_A, color_B, t);
 
-	return result;*/
+	return result;
 }
 
 TGAColor Model::diffuse(Vec2f uvf, int face) {
@@ -215,8 +215,8 @@ TGAColor Model::diffuse(Vec2f uvf, int face) {
 	x[2] = Vec2i(srcU + 1 > width ? srcU - 1 : srcU + 1, srcV + 1 > height ? srcV - 1 : srcV + 1);
 	x[3] = Vec2i(srcU + 1 > width ? srcU - 1 : srcU + 1, srcV);
 
-	float s = 1.f - (u - srcU);
-	float t = 1.f - (v - srcV);
+	float s = (u - srcU);
+	float t = (v - srcV);
 
 	TGAColor color_A;
 	TGAColor color_B;
@@ -262,6 +262,8 @@ Vec3f Model::normal(int iface, int nthvert) {
 Vec3f Model::tangent(int iface, int nthvert)
 {
 	int idx = faces_[iface][nthvert][2];
-	Vec3f temp = tangent_[idx];
+	Vec3f temp;
+	if(tangent_.size() != 0)
+		temp = tangent_[idx];
 	return temp;
 }

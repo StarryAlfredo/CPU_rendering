@@ -276,6 +276,10 @@ void Pipeline::ChangeShader(Shader * shader, int sizeof_vertex_in,
 	shader_uniform_ = uniform;
 }
 
+void * Pipeline::GetUniform() {
+	return shader_uniform_;
+}
+
 void Pipeline::SaveDelete() {
 	
 	for (int i = 0; i < 3; ++i) {
@@ -356,19 +360,13 @@ bool Pipeline::RasterzieTriangle(Vec4f clip_coords[3], void* vOut[3], renderWind
 				float z = 0.0f;
 
 				for (int i = 0; i < 3; ++i) {
-					z += barycentric[i] * w_argum[i];
+					z += barycentric[i] * screen_depth[i];
 				}
 
-				z = 1.f / z;
-
-				if (!zBufferState) {
-					//再插值
-					InterpolateVertexOut(vOut, barycentric, w_argum);
-					//绘制
-					DrawFragment(P, z, 0, ren);
-				}
-				if (z <= ren.zBuffer[index]) {
-					//再插值
+				if (!zBufferState)
+					z = 1.0f;
+				if (z - ren.zBuffer[index] < 0.00001f) {
+					//插值
 					InterpolateVertexOut(vOut, barycentric, w_argum);
 					//绘制
 					DrawFragment(P, z, 0, ren);
@@ -385,6 +383,8 @@ void Pipeline::DrawFragment(Vec2i P, float depth, int backface, renderWindow& re
 	int index = P.y * width + P.x;
 
 	bool discord = false;
+	
+
 
 	TGAColor color = shader_->pixelShader(shader_vertex_out_, shader_uniform_, discord, backface);
 
@@ -393,11 +393,11 @@ void Pipeline::DrawFragment(Vec2i P, float depth, int backface, renderWindow& re
 	}
 
 	TGAColor result = OMSetBlendState(color, ren.colorBuffer[index], color_op_, color_factor_src_, color_factor_dst_);
-
+	//result = result * ren.zBuffer[index];
 	ren.colorBuffer[index] = result;
+ 
+	ren.zBuffer[index] = depth;
 	
-	if(zBuffer_is_write)
-		ren.zBuffer[index] = depth;
 }
 
 void Pipeline::DrawFragment(Vec2i start, Vec2i End, renderWindow & ren) {
@@ -444,10 +444,6 @@ void Pipeline::DrawFragment(Vec2i start, Vec2i End, renderWindow & ren) {
 		}
 	}
 
-}
-
-Vec3f Pipeline::Rasterzie(Vec3f& clip_coords, int& width, int& height) {
-	return Vec3f((int)((clip_coords[0] + 1.f) * 0.5f * width + 0.5f), (int)((clip_coords[1] + 1.f) * 0.5f * height + 0.5f), (clip_coords[2] + 1.f) * 0.5f);
 }
 
 void Pipeline::InterpolateVertexOut(void* vertex_out[3], Vec3f& weights, float weight_argum[3]) {
