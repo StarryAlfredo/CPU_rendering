@@ -28,23 +28,23 @@ ui界面
 
 天空盒：
 
-![Alt text](https://github.com/StarryAlfredo/CPU_rendering/blob/master/RunningEffectOfRender/skybox.PNG)
-
-法线贴图：
-
-​	
+![skybox](https://github.com/StarryAlfredo/CPU_rendering/blob/master/RunningEffectOfRender/skybox.PNG)
 
 阴影贴图：
 
-![Alt text](https://github.com/StarryAlfredo/CPU_rendering/blob/master/RunningEffectOfRender/shadow.png)
+![shadowMap](https://github.com/StarryAlfredo/CPU_rendering/blob/master/RunningEffectOfRender/shadow.png)
 
 双线性插值效果：
 
-​	
+​	![Bilinear interpolation](https://github.com/StarryAlfredo/CPU_rendering/blob/master/RunningEffectOfRender/double.png)
 
 齐次裁剪：
 
+![clip](https://github.com/StarryAlfredo/CPU_rendering/blob/master/RunningEffectOfRender/clip.png)
 
+材质:
+
+![material](https://github.com/StarryAlfredo/CPU_rendering/blob/master/RunningEffectOfRender/material.png)
 
 
 
