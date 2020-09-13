@@ -212,7 +212,7 @@ float VectorGetY(Vec3f & f){ return f.Dot(Vec3f(0, 1, 0)); }
 
 Vec3f NormalSampleToWorldSpace(Vec3f normalMapSample, Vec3f normalW, Vec3f tangentW){
 	Vec3f result;
-	
+	Vec3f normalT = normalMapSample * 2.0f - Vec3f(1.f, 1.f, 1.f);
 	Vec3f N = normalW.GetNormalize();
 	Vec3f T = (tangentW - (N * tangentW.Dot(N))).GetNormalize();
 	Vec3f B = N.CrossProduct(T);
@@ -223,8 +223,8 @@ Vec3f NormalSampleToWorldSpace(Vec3f normalMapSample, Vec3f normalW, Vec3f tange
 	m[1] = std::vector<float>{T.y, B.y, N.y};
 	m[2] = std::vector<float>{T.z, B.z, N.z};
 
-	result = m * normalW;
-
+	result = m * normalT;
+	result.normalize();
 	return result;
 }
 

@@ -200,6 +200,7 @@ TGAColor Model::diffuse(Vec2f uvf) {
 TGAColor Model::diffuse(Vec2f uvf, int face) {
 	int u = uvf[0] * skybox_[face].get_width();
 	int v = uvf[1] * skybox_[face].get_height();
+
 	return skybox_[face].get(u, v);
 	/*float u = uvf[0] * skybox_[face].get_width();
 	float v = uvf[1] * skybox_[face].get_height();
@@ -236,11 +237,36 @@ TGAColor Model::diffuse(Vec2f uvf, int face) {
 }
 
 Vec3f Model::normal(Vec2f uvf) {
-	Vec2i uv(uvf.raw[0] * normalmap_.get_width(), uvf.raw[1] * normalmap_.get_height());
-	TGAColor c = normalmap_.get(uv.raw[0], uv[1]);
-	Vec3f res;
-	for (int i = 0; i < 3; i++)
-		res.raw[2 - i] = (float)c[i] / 255.f*2.f - 1.f;
+	float u = uvf[0] * normalmap_.get_width();
+	float v = uvf[1] * normalmap_.get_height();
+
+	Vec2i x[4];
+
+	int width = normalmap_.get_width();
+	int height = normalmap_.get_height();
+	int srcU = (int)u, srcV = int(v);
+
+	x[0] = Vec2i(srcU, srcV);
+	x[1] = Vec2i(srcU, srcV + 1 > height ? srcV - 1 : srcV + 1);
+	x[2] = Vec2i(srcU + 1 > width ? srcU - 1 : srcU + 1, srcV + 1 > height ? srcV - 1 : srcV + 1);
+	x[3] = Vec2i(srcU + 1 > width ? srcU - 1 : srcU + 1, srcV);
+
+	float s = (u - srcU);
+	float t = (v - srcV);
+
+	TGAColor color_A;
+	TGAColor color_B;
+	TGAColor color[4];
+
+	for (int i = 0; i < 4; ++i) {
+		color[i] = normalmap_.get(x[i].u, x[i].v);
+	}
+
+	color_A = Lerp(color[0], color[3], s);
+	color_B = Lerp(color[1], color[2], s);
+
+	TGAColor result = Lerp(color_A, color_B, t);
+	Vec3f res(result[0] / 255.f, result[1] / 255.f, result[2] / 255.f);
 	return res;
 }
 

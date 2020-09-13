@@ -1,8 +1,8 @@
 ﻿  main.cpp
-c:\users\xgm\source\repos\cpu_render\cpu_render\tools\math.h(216): warning C4244: “*=”: 从“T”转换到“unsigned char”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\tools\math.h(219): warning C4244: “*=”: 从“T”转换到“unsigned char”，可能丢失数据
           with
           [
               T=float
           ]
-c:\users\xgm\source\repos\cpu_render\cpu_render\tools\math.h(240): warning C4244: “=”: 从“float”转换到“unsigned char”，可能丢失数据
+c:\users\xgm\source\repos\cpu_render\cpu_render\tools\math.h(243): warning C4244: “=”: 从“float”转换到“unsigned char”，可能丢失数据
   CPU_Render.vcxproj -> C:\Users\xgm\source\repos\CPU_Render\Debug\CPU_Render.exe

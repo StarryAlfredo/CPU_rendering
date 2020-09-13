@@ -51,7 +51,7 @@ float pitch  =  0.0f;
 float zBuffer[SCREEN_HEIGHT * SCREEN_WIDTH];
 
 TGAImage image(SCREEN_HEIGHT, SCREEN_WIDTH, TGAImage::RGB);
-Model * model_of_helmet, *model_of_sphere, *model_of_plane;//待优化
+Model * model_of_helmet, *model_of_sphere, *model_of_plane, *model_of_crab;//待优化
 
 
 int main(int argc, char ** argv) {
@@ -62,7 +62,7 @@ int main(int argc, char ** argv) {
 	model_of_helmet = new Model("assets//helmet//helmet.obj");
 	model_of_sphere = new Model("assets//sphere//sphere.obj");
 	model_of_plane = new Model("assets//plane//plane.obj");
-
+	
 	model_of_sphere->LoadCubeTexture("assets//sky//sunset//sunset.");
 
 	FirstPersonCamera *camera = new FirstPersonCamera;
@@ -78,9 +78,9 @@ int main(int argc, char ** argv) {
 	SpotLight		 spotLight;
 	
 	//平行光
-	dLight.SetAmbientLight(Vec3f(0.5f,0.5f,0.5f));
+	dLight.SetAmbientLight(Vec3f(0.4f,0.4f,0.4f));
 	dLight.SetDirection(Vec3f(0.0f, 0.0f, -1.0f)); 
-	dLight.SetLightOfDiffuse(Vec3f(0.8f, 0.8f, 0.8f));
+	dLight.SetLightOfDiffuse(Vec3f(0.5f, 0.5f, 0.5f));
 	dLight.SetLightOfSpecular(Vec3f(0.8f,0.8f,0.8f));
 	dLight.SetEyePosition(eyePosition);
 
@@ -109,7 +109,8 @@ int main(int argc, char ** argv) {
 
 	//世界矩阵
 	Matrix wMatrix;
-	wMatrix =  MatrixTranslation(Vec3f(0.0f, 0.0f, 2.0f)) * MatrixRotationX((float)(- M_PI)/ 2.f) ;
+	wMatrix =  MatrixTranslation(Vec3f(0.0f, 0.0f, 2.0f)) * MatrixRotationX((float)(- M_PI / 2)) ;
+//	wMatrix = MatrixScale(Vec3f(0.1f, 0.1f, 0.1f)) * MatrixTranslation(Vec3f(0.0f, 0.0f, 2.0f)) * MatrixRotationX((float)(-M_PI)) * MatrixRotationY(M_PI);
 	Matrix planeMatrix = MatrixScale(Vec3f(30.0f, 30.0f, 30.0f)) * MatrixTranslation(Vec3f(0.0f, -0.2f, 2.f)) * MatrixRotationX((float)(-M_PI)/ 2);
 	//光源的视口矩阵
 	Matrix lightMatrix;
@@ -284,9 +285,9 @@ int main(int argc, char ** argv) {
 		blin_uniform.Model = model_of_helmet;
 		object_of_helment.Draw(pipeline_of_blinn, myWindow);
 		
-		blin_uniform.worldMatrix = &planeMatrix;
-		blin_uniform.Model = model_of_plane;
-	    objec_of_plane.Draw(pipeline_of_blinn, myWindow);
+	//	blin_uniform.worldMatrix = &planeMatrix;
+	//	blin_uniform.Model = model_of_plane;
+	//  objec_of_plane.Draw(pipeline_of_blinn, myWindow);
 		
 		myWindow.DrawPointWithColor();
 		myWindow.renderPresent();	

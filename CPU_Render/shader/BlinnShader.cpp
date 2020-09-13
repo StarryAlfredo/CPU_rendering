@@ -40,10 +40,10 @@ Vec4f BlinnShader::vertexShader(void * vIn, void * vOut, void * uniform) {
 	
 	VOUT->depthPos = *(UNIFORM->light_vp) * PosW;
 	VOUT->NormalW = nomalW.rgb().GetNormalize();
-	VOUT->TangentW = VIN->TangentL;
+	VOUT->TangentW = *(UNIFORM->worldMatrix) * VIN->TangentL;
 	VOUT->PosW = Vec3f(PosW.x, PosW.y, PosW.z);
 	VOUT->Texcoord = VIN->Texcoord;
-
+			
 	return PosH;
 }
 
@@ -60,6 +60,8 @@ TGAColor  BlinnShader::pixelShader(void* pIn, void * uniform,  bool& discard, in
 	const int height = UNIFORM->ren->GetHeight();
 
 	Vec3f map_normal = UNIFORM->Model->normal(PIN->Texcoord);
+	//float k = 1.f / 255.f;
+	//map_normal = map_normal * k;
 	Vec3f normal = NormalSampleToWorldSpace(map_normal, PIN->NormalW, PIN->TangentW);
 
 	TGAColor color = UNIFORM->Model->diffuse(PIN->Texcoord);
@@ -87,7 +89,7 @@ TGAColor  BlinnShader::pixelShader(void* pIn, void * uniform,  bool& discard, in
 		//return TGAColor(255, 255, 255, 255);
 	}
 
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < size; ++i) {	
 		if (dynamic_cast<PointLight*>(light[i]) != nullptr || dynamic_cast<SpotLight*>(light[i]))
 			light[i]->SetDirection(PIN->PosW);
 		intensity = light[i]->ColorShader(normal, *(UNIFORM->material), visible);

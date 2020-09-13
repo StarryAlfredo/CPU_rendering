@@ -190,9 +190,9 @@ struct TGAColor {
 	}
 
 	TGAColor(unsigned char R, unsigned char G, unsigned char B, unsigned char A = 255) : bgra(), bytespp(4) {
-		bgra[0] = B;
+		bgra[0] = R;
 		bgra[1] = G;
-		bgra[2] = R;
+		bgra[2] = B;
 		bgra[3] = A;
 	}
 
@@ -209,6 +209,9 @@ struct TGAColor {
 		for (int i = bpp; i < 4; i++) {
 			bgra[i] = 0;
 		}
+		int temp = bgra[0];
+		bgra[0] = bgra[2];
+		bgra[2] = temp;
 	}
 
 	TGAColor& operator * (Vec3f& f) {

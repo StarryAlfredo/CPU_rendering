@@ -58,9 +58,8 @@ void Object::Draw(Pipeline& pipeline, renderWindow& ren)
 				Vec3f pos = mesh_->vert(i, j);
 				skyboxshader_vertex_in* vertex_In = (skyboxshader_vertex_in*)pipeline.GetShaderVertexIn(j);
 				vertex_In->PosL = pos;
-			}
+			}		
 			pipeline.PipelineRun(ren);
-
 		}
 	} else if (shaderName_ == "PBRShader") {
 
